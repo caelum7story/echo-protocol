@@ -1,0 +1,12 @@
+{
+  "name": "echo-protocol",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check:public": "node scripts/check-public.mjs",
+    "test:frontend": "npm --prefix frontend test",
+    "build:frontend": "npm --prefix frontend run build:worker",
+    "compile:genesis": "npm --prefix contracts/genesis run compile",
+    "compile:launch": "npm --prefix contracts/launch run compile"
+  }
+}

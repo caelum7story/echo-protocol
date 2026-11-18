@@ -1,0 +1,12 @@
+{
+  "chainId": 56,
+  "observedBlock": 132912002,
+  "identity": "0x60b9262456de011f7d15a54cdd8c48baaa8b022f",
+  "identityCodeHash": "0xc4006e6e6ffaaf6996116617392beabe4f5f0a0795841322f91c2ceac34d6ace",
+  "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
+  "routerCodeHash": "0x69aef35de7236f9ae83edadff736f01ea40edd8919b2e73d87dea5d3255b8c3e",
+  "factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+  "factoryCodeHash": "0x9e8d17faaee69b053be6ac65b2b2c317741d770cb5fbdd9512536d17e9e076ca",
+  "wbnb": "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+  "wbnbCodeHash": "0xb7d84205eaaf83ce7b3940c6beaad6d22790255e34a9a2b486aa8cdfff118fe6"
+}

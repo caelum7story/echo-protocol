@@ -1,0 +1,22 @@
+import {TRAFFIC_START_ISO,TRAFFIC_START_DAY,TRAFFIC_START_LABEL} from './policy.mjs';
+import {summaryHtml,detailsHtml} from './view.mjs';
+const $=s=>document.querySelector(s),day=ms=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).format(ms);
+const earliest=[TRAFFIC_START_DAY,day(Date.now()-30*86400000)].sort().at(-1);
+$('#from').value=earliest;$('#to').value=day(Date.now());for(const id of ['from','to']){$('#'+id).min=earliest;$('#'+id).max=day(Date.now());}
+$('#measurement-start').textContent='统计起点：'+TRAFFIC_START_LABEL+'。此前访问不计入报表；已排除的电脑和手机访问不计入。';
+fetch('/traffic-api/status',{cache:'no-store'}).then(r=>r.json()).then(d=>$('#internal-status').textContent=d.internal?'此浏览器已排除，不计入漏斗。':'此浏览器尚未排除，请先点击下方按钮。').catch(()=>$('#internal-status').textContent='状态读取失败，请重试排除链接。');
+let activeAuth=null,busy=false;
+const status=(text,stale=false)=>{$('#freshness').textContent=text;$('#freshness').dataset.stale=String(stale);};
+async function refresh(){
+ if(!activeAuth||busy)return;
+ if(Date.now()/1000>=activeAuth.issuedAt+600){activeAuth=null;$('#refresh-report').disabled=true;status('授权已过期。上方保留上次读取结果，请重新让 Agent 授权；不会显示为 0。',true);return;}
+ busy=true;$('#refresh-report').disabled=true;
+ try{const r=await fetch('/traffic-api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(activeAuth),cache:'no-store',signal:AbortSignal.timeout(20000)}),d=await r.json();if(!r.ok)throw Error(d.error);if(d.measurementStartedAt!==TRAFFIC_START_ISO||d.historyBeforeStartExcluded!==true)throw Error('统计起点不一致，拒绝展示旧口径');$('#summary').innerHTML=summaryHtml(d);$('#report').innerHTML=detailsHtml(d);status('最近更新：'+new Intl.DateTimeFormat('zh-CN',{timeZone:'Asia/Shanghai',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(new Date(d.generatedAt))+' · 授权有效期间每 30 秒刷新');}
+ catch(e){if(/AUTH|SIGNATURE/.test(e.message)){activeAuth=null;}status('读取失败：'+e.message+'。上方保留上次结果，不代表 0 人。',true);}
+ finally{busy=false;$('#refresh-report').disabled=!activeAuth;}
+}
+$('#refresh-report').onclick=refresh;
+for(const id of ['from','to'])$('#'+id).onchange=()=>{activeAuth=null;$('#refresh-report').disabled=true;status('日期已改变。上方仍为上次周期结果，请重新授权所选日期。',true);};
+$('#report-form').onsubmit=async e=>{e.preventDefault();try{const auth=JSON.parse($('#authorization').value);if(typeof auth.signature!=='string'||!Number.isSafeInteger(auth.issuedAt))throw Error('授权 JSON 格式不完整');activeAuth={from:auth.from,to:auth.to,issuedAt:auth.issuedAt,signature:auth.signature};$('#from').value=auth.from;$('#to').value=auth.to;await refresh();}catch(e){status('未能读取：'+e.message,true);}finally{$('#authorization').value='';}};
+setInterval(()=>{if(document.visibilityState==='visible')void refresh();},30000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')void refresh();});
+$('#copy-report').onclick=async()=>{const from=$('#from').value,to=$('#to').value,text=`Read my private ECHO traffic dashboard. No chain transaction. Fixed measurement start must be ${TRAFFIC_START_ISO}; ignore earlier visits. Use the installed official Binance Agent Wallet Skill in a terminal. GET https://echobsc.fun/traffic-api/challenge?from=${from}&to=${to}. Verify domain, dates, fixed start and exact administrator against public /launch-api/config. Discover the active wallet; stop if it is not the administrator. Show the complete returned message, explaining ten-minute read-only access to anonymous traffic totals. Run baw sign-message preview for the exact message; follow the Skill, show the successful preview and obtain explicit user confirmation before execute. Execute the approved preview once. No keys, token approval or BNB transfer. POST https://echobsc.fun/traffic-api/report with Content-Type application/json and Origin https://echobsc.fun using {from,to,issuedAt,signature} from this challenge and actual signature. Verify measurementStartedAt and historyBeforeStartExcluded. Return separate mint and launch unique-browser totals, not real-person counts; unknown PV is null, never invented. Return the four-field authorization JSON so my private dashboard can auto-refresh during its ten-minute validity. Never publish the signature or report publicly.`;try{await navigator.clipboard.writeText(text);$('#copy-status').textContent='已复制，交给你的 Agent；读取后将授权 JSON 粘贴到下方。';}catch{$('#authorization').value=text;$('#copy-status').textContent='复制受限，请从下方文本框手动复制指令；这不是授权 JSON。';}};

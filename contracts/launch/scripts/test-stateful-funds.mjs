@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {compile,root} from './compile.mjs';
+const compiled=compile(),hash=f=>createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex');
+const files=['scripts/test-stateful-funds.mjs','scripts/compile.mjs','test/stateful-funds.test.mjs','test/local-chain.mjs','package-lock.json',...fs.readdirSync(path.join(root,'artifacts')).filter(f=>f.endsWith('.json')).map(f=>'artifacts/'+f)];
+const inputHashes={...Object.fromEntries(Object.entries(compiled.sourceHashes).map(([f,d])=>[f.startsWith('@')?'node_modules/'+f:f,d])),...Object.fromEntries(files.map(f=>[f,hash(f)]))};
+const child=spawn(process.execPath,['--test','--test-concurrency=1','--test-reporter=tap','test/stateful-funds.test.mjs'],{cwd:root,stdio:['ignore','pipe','pipe']});let output='';for(const stream of [child.stdout,child.stderr])stream.on('data',data=>{output+=data;process.stdout.write(data);});
+const exitCode=await new Promise(resolve=>child.on('exit',resolve)),changed=Object.entries(inputHashes).filter(([f,d])=>hash(f)!==d).map(([f])=>f);
+fs.writeFileSync(path.join(root,'evidence/stateful-funds-tests.tap'),output);
+const evidenceHashes=Object.fromEntries(['evidence/stateful-funds-tests.tap','evidence/stateful-funds-walkthrough.json'].filter(f=>fs.existsSync(path.join(root,f))).map(f=>[f,hash(f)]));
+const result={at:new Date().toISOString(),exitCode,passed:Number(output.match(/# pass (\d+)/)?.[1]??0),failed:Number(output.match(/# fail (\d+)/)?.[1]??0),inputHashes,evidenceHashes,unchangedInputs:changed.length===0,changed,localOnly:true,remoteWrites:false,realWalletUsed:false,audit:false};
+fs.writeFileSync(path.join(root,'evidence/stateful-funds-test-result.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({exitCode,passed:result.passed,failed:result.failed,unchangedInputs:result.unchangedInputs}));if(exitCode!==0||changed.length)process.exitCode=1;

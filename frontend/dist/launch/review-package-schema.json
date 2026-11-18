@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ECHO Launch local review package",
+  "type": "object",
+  "required": ["schema", "scope", "chainId", "projectId", "capturedAt", "executionReady", "chainVerified", "unsignedTransaction", "transactionHash", "readContext", "documents", "reviewInstructions", "packageDigest"],
+  "properties": {
+    "schema": {"const": "echo-launch-review-package/v1"},
+    "scope": {"const": "browser-local-only"},
+    "chainId": {"const": 56},
+    "projectId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "capturedAt": {"type": "string", "format": "date-time"},
+    "executionReady": {"const": false},
+    "chainVerified": {"const": false},
+    "unsignedTransaction": {"type": "null"},
+    "transactionHash": {"type": "null"},
+    "readContext": {"type": "object"},
+    "documents": {"type": "object", "required": ["launchPlan", "identityRecord"], "properties": {"launchPlan": {"$ref": "./schema-v2.json"}, "identityRecord": {"type": ["object", "null"]}}},
+    "reviewInstructions": {"type": "object", "required": ["en", "zh"], "properties": {"en": {"type": "string"}, "zh": {"type": "string"}}},
+    "packageDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  },
+  "$comment": "Runtime checks additionally bound the complete package to 32 MiB, recompute hashes, validate the full current manifest and reconcile identity snapshot context. This schema does not establish signatures, wallet ownership or chain execution."
+}

@@ -1,0 +1,32 @@
+{
+  "chainId": 1337,
+  "compiler": "0.8.24+commit.e11b9ed9.Emscripten.clang",
+  "referenceMint": "0x4Dee8C96BD33F174b8310eF89Be00a16F6c0321a",
+  "moduleSha256": "bf4370105b9be00106faf9bbb31e04970cda2fe56f5e36c32821c0d09a5b2f4d",
+  "passed": [
+    "zero rescue recipient rejected",
+    "two-day delay and fixed rescue recipient",
+    "non-owner pause rejected",
+    "queue requires pause",
+    "non-owner queue rejected",
+    "zero rescue amount rejected",
+    "only one pending rescue permitted",
+    "unpause blocked while rescue pending",
+    "non-owner cancellation rejected",
+    "execution blocked before deadline",
+    "execution blocked one second before deadline",
+    "deadline does not automatically execute rescue",
+    "non-owner execution rejected after deadline",
+    "owner execution transfers exact amount to fixed recipient and clears queue",
+    "completed rescue cannot be replayed",
+    "owner cancellation clears pending rescue and permits resume",
+    "LP token rescue rejected even after deadline",
+    "native rescue cannot spend reserved refund credits",
+    "original native rescue preserves credits and does not retire mint",
+    "settlement/project-token rescue permanently prevents resume",
+    "settlement/project-token rescue permanently prevents resume",
+    "ownership renouncement disabled",
+    "two-step admin transfer preserves immutable rescue recipient"
+  ],
+  "scope": "Local EVM reference tests only. The original mint hook is extracted unchanged. ECHO mint integration and deployment remain pending. No network RPC or real wallet was used."
+}

@@ -1,0 +1,240 @@
+{
+  "schemaVersion": 1,
+  "project": "ECHO",
+  "status": "mint-open",
+  "chainId": 56,
+  "mintContract": "0xe90D5BEb063B8df8c76AaF2B0da839cD4B19f55f",
+  "activityEndpoint": null,
+  "executionReady": true,
+  "message": "Mint 已开启。每次执行前重新读取链上开关、身份额度、报价与 Gas，不以静态快照替代实时核验。",
+  "freeMint": {
+    "designStatus": "confirmed",
+    "globalShares": 1000,
+    "perIdentity": 1,
+    "firstMintOnly": true,
+    "paidMintsConsumeFreeQuota": false,
+    "countsTowardGenesisSupply": true,
+    "networkGasStillRequired": true,
+    "automaticPaidFallback": true,
+    "boundedPaymentConsentRequired": true,
+    "nativeBnbRequiresWalletTransaction": true
+  },
+  "identityMintLimit": {
+    "designStatus": "confirmed",
+    "baseTotal": 10,
+    "increasePerSuccessfulDirectInvite": 1,
+    "additionalQuotaPaidOnly": true,
+    "distinctFirstMintOnly": true,
+    "freeFirstMintsQualify": true,
+    "selfReferralEligible": false,
+    "increasesGlobalSupply": false
+  },
+  "rescuePolicy": {
+    "designStatus": "confirmed",
+    "mode": "identide-derived-24h",
+    "implementationStatus": "deployed-verified",
+    "delaySeconds": 86400,
+    "referenceDelaySeconds": 172800,
+    "ownerOnly": true,
+    "pausedRequired": true,
+    "fixedRecipient": true,
+    "rescueVault": "0xA0F8fA9E4Cb9DFeE193C46B147D1F3ae19bD69e5",
+    "onePendingRescue": true,
+    "cancellable": true,
+    "automaticExecution": false,
+    "lpRescueAllowed": false,
+    "projectLpRecipient": "0x000000000000000000000000000000000000dEaD",
+    "nativeRefundCreditsProtected": true,
+    "nativeRescueRetiresMint": false,
+    "referenceUsdtOrProjectTokenRescueRetiresMint": true,
+    "automaticMigration": false,
+    "automaticUserRefund": false,
+    "referenceContract": "0x4Dee8C96BD33F174b8310eF89Be00a16F6c0321a",
+    "executionReady": false
+  },
+  "liquidityPolicy": {
+    "designStatus": "confirmed",
+    "projectLpRecipient": "0x000000000000000000000000000000000000dEaD",
+    "withdrawable": false,
+    "migratable": false,
+    "projectLpFeeSharing": false,
+    "implementationStatus": "deployed-pool-not-opened"
+  },
+  "launchPolicy": {
+    "designStatus": "confirmed-core-parameters",
+    "executionReady": true,
+    "preOpenPaidPriceWei": "2000000000000000",
+    "automaticPaidFallback": true,
+    "boundedPaymentConsentRequired": true,
+    "mintTokenDelivery": "same-transaction-to-minter",
+    "separateTokenClaimRequired": false,
+    "pricingRulesOwnerMutable": true,
+    "pricingChangesApplyToFutureMintsOnly": true,
+    "taxRatesOwnerMutable": false,
+    "openingTaxDurationOwnerMutable": false,
+    "totalShares": 10000,
+    "tokensPerShare": 1000,
+    "mintUserAllocationTokens": "10000000",
+    "rewardReserveBps": 2000,
+    "rewardReserveBasis": "total-token-supply",
+    "liquidityTokensSeparate": true,
+    "totalTokenSupply": "21250000",
+    "liquidityTokenAllocation": "7000000",
+    "rewardAllocationTokens": "4250000",
+    "liquidityTokensPerPaidShare": 700,
+    "unusedLiquidityReserve": "burn-after-sellout",
+    "rewardDistributionRules": {
+      "tokensPerSuccessfulInvite": 200,
+      "attribution": "EchoLaunch.successfulInvites",
+      "directOnly": true,
+      "distinctFirstMintOnly": true,
+      "includesFreeFirstMint": true,
+      "selfReferralEligible": false,
+      "existingRecordsIncluded": true,
+      "extraPaidMintAllowancePerInvite": 1,
+      "source": "existing-reward-reserve",
+      "distribution": "project-wallet-transfer-after-pool-opening",
+      "automaticOnchainPayout": false,
+      "rules": "/referral-rewards.md"
+    },
+    "autoOpenMintedShares": 5000,
+    "autoOpenIncludesFree": true,
+    "ownerCanOpenEarly": true,
+    "continueMintAfterOpen": true,
+    "postOpenPricingMode": "fixed-tokens-market-linked-bnb",
+    "deadlineEnabled": false,
+    "mintRefunds": false,
+    "liquidityBps": 7000,
+    "projectBps": 3000,
+    "projectPaymentTiming": "each-successful-paid-mint",
+    "projectRecipient": "0xA0F8fA9E4Cb9DFeE193C46B147D1F3ae19bD69e5",
+    "buyTaxBps": 100,
+    "normalSellTaxBps": 200,
+    "openingSellTaxBps": 3000,
+    "openingSellTaxSeconds": 1800,
+    "openingTaxReplacesNormalSellTax": true,
+    "taxCollectionMode": "accumulate-tokens-and-batch-swap-to-bnb",
+    "taxRecipient": "0xA0F8fA9E4Cb9DFeE193C46B147D1F3ae19bD69e5",
+    "oracleParameters": {
+      "windowSeconds": 300,
+      "maxWindowSeconds": 3600,
+      "maxAgeSeconds": 900,
+      "initialMinBnbReserveWei": "100000000000000000",
+      "initialMaxDeviationBps": 1500,
+      "initialPremiumBps": 10000
+    },
+    "taxSwapParameters": {
+      "automaticThresholdTokens": "100",
+      "maxPoolTokenReserveBps": 25,
+      "slippageBps": 300,
+      "permissionlessMaintenance": true
+    },
+    "liveIntegrationStatus": "implemented-and-owner-activated"
+  },
+  "supplyStatus": {
+    "designStatus": "confirmed",
+    "totalShares": 10000,
+    "tokensPerShare": 1000,
+    "totalTokenSupply": "21250000",
+    "userMintTokens": "10000000",
+    "liquidityTokens": "7000000",
+    "rewardTokens": "4250000"
+  },
+  "adminWallet": "0xA0F8fA9E4Cb9DFeE193C46B147D1F3ae19bD69e5",
+  "rewardVault": "0xA0F8fA9E4Cb9DFeE193C46B147D1F3ae19bD69e5",
+  "deploymentPreparation": {
+    "status": "deployed-and-owner-activated",
+    "deployer": "0xA0F8fA9E4Cb9DFeE193C46B147D1F3ae19bD69e5",
+    "signingPage": "/launch/echo/index.html",
+    "request": "/launch/echo/deployment-request.json",
+    "mintEnabledAfterDeployment": false,
+    "transactionHash": "0x9c66925733d61f7c529e7ce42a7f244f6baa25bda49161fa1c578a5f0f2c2be7",
+    "deploymentBlock": 132923410,
+    "verifiedDeployment": "/launch/echo/verified-deployment.json"
+  },
+  "tokenContract": "0xB3ca4b947872f92307bCB5b69Fb3a675ABfD8F41",
+  "oracleContract": "0xc5A4A7B12a889368379A01337d4639DfF99a57aD",
+  "pairContract": "0xaFe793901Ec2DAc8c8F5F832Ab818A0d06bC13CA",
+  "mintEnabled": true,
+  "integrationReady": true,
+  "uiMode": "live-chain-read-only-agent-mint",
+  "officialOrigin": "https://echobsc.fun",
+  "agentGuide": "/agent-guide.md",
+  "agentManifest": "/agent.json",
+  "adminPage": "/launch/echo/admin.html",
+  "readiness": {
+    "configured": true,
+    "requiresExecutionReady": true,
+    "requiresOnchainMintEnabled": true,
+    "requiresUnpausedAndNotRetired": true,
+    "requiresRuntimeCodeHashMatch": true
+  },
+  "rpcUrls": [
+    "https://bsc-rpc.publicnode.com",
+    "https://bsc-dataseed.bnbchain.org"
+  ],
+  "codeHashes": {
+    "launch": "0x83f141c961d85b0c8dcd3a135a09920a77153eed4fb24cbdbbd8dee91e246d2b",
+    "token": "0x8d1c1f913447975a8e38c73a20be47882d1cb10779664cfc2ff5a676e694b000",
+    "oracle": "0xb69aa0567c761f94d4793049c8de3bb54b6363efb69d7dfe6e05058617c4dcf5",
+    "pair": "0x60e4bcb14447615ab7c14fda2c2d70ca4191570e8841c75618e627c8f72662f8"
+  },
+  "identityRegistry": "0x60b9262456de011f7d15a54cdd8c48baaa8b022f",
+  "identityRegistryCodeHash": "0xc4006e6e6ffaaf6996116617392beabe4f5f0a0795841322f91c2ceac34d6ace",
+  "deploymentBlock": 132923410,
+  "sourceVerification": {
+    "sourcify": "exact_match",
+    "bscscan": "pending-explorer-confirmation",
+    "contracts": {
+      "launch": {
+        "address": "0xe90D5BEb063B8df8c76AaF2B0da839cD4B19f55f",
+        "sourcify": "exact_match",
+        "url": "https://repo.sourcify.dev/56/0xe90D5BEb063B8df8c76AaF2B0da839cD4B19f55f"
+      },
+      "token": {
+        "address": "0xB3ca4b947872f92307bCB5b69Fb3a675ABfD8F41",
+        "sourcify": "exact_match",
+        "url": "https://repo.sourcify.dev/56/0xB3ca4b947872f92307bCB5b69Fb3a675ABfD8F41"
+      },
+      "oracle": {
+        "address": "0xc5A4A7B12a889368379A01337d4639DfF99a57aD",
+        "sourcify": "exact_match",
+        "url": "https://repo.sourcify.dev/56/0xc5A4A7B12a889368379A01337d4639DfF99a57aD"
+      }
+    }
+  },
+  "activationRequired": false,
+  "readinessMode": "local-integration-ready-and-live-onchain-gates-required",
+  "officialOrigins": [
+    "https://echobsc.fun",
+    "https://echo-mint-lab-1105.zestyyew1024.chatgpt.site"
+  ],
+  "activationTransaction": "0xa8e638dce3386cdcb264be4d4bf9ef84a01bcf63e86695c7b3b1788eecb6185e",
+  "stateObservedAtBlock": 132929788,
+  "growthCampaign": {
+    "id": "echo-paid-invite-v1",
+    "budgetWei": "200000000000000000",
+    "buyerRebateBps": 500,
+    "inviterRebateBps": 500,
+    "eligibility": "first-successful-paid-order-per-invited-identity",
+    "attribution": "chain-recorded-firstReferrer",
+    "budgetOrder": "chain-order-whole-orders-stop-when-insufficient",
+    "source": "project-30-percent-revenue",
+    "distribution": "project-wallet-reconciliation",
+    "automaticPayout": false,
+    "leaderboard": {
+      "basis": "distinct-direct-invited-identities-with-first-paid-mint",
+      "settles": "first-pool-opening-transaction-inclusive",
+      "prizesEcho": [
+        "25000",
+        "15000",
+        "10000"
+      ],
+      "prizePoolEcho": "50000",
+      "source": "existing-echo-reward-reserve",
+      "tieBreak": "earlier-event-reaching-the-score",
+      "minimumScore": 1,
+      "unusedPrizes": "remain-in-reward-reserve"
+    }
+  }
+}

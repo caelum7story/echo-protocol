@@ -1,0 +1,17 @@
+{
+  "referenceProject": "IDENTIDE",
+  "chainId": 56,
+  "mintContract": "0x4Dee8C96BD33F174b8310eF89Be00a16F6c0321a",
+  "sourceUrl": "https://sourcify.dev/server/v2/contract/56/0x4Dee8C96BD33F174b8310eF89Be00a16F6c0321a?fields=sources,abi,creationMatch,runtimeMatch",
+  "creationMatch": "exact_match",
+  "runtimeMatch": "exact_match",
+  "files": {
+    "EmergencyControl.sol": {
+      "sha256": "bf4370105b9be00106faf9bbb31e04970cda2fe56f5e36c32821c0d09a5b2f4d"
+    },
+    "AgentMint.sol": {
+      "sha256": "e1621cb9a281ce66bee15244918dce2f4cce58b7164ea7a00be0c6eef115514b"
+    }
+  },
+  "scope": "Unmodified reference module and mint source. ECHO integration and deployment are not implemented. No original admin or rescue wallet is adopted."
+}

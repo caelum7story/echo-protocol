@@ -1,0 +1,13 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {compileRecipientFixtures} from './compile-recipient-fixtures.mjs';
+const root=path.resolve(import.meta.dirname,'..'),hash=f=>createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex'),compiled=JSON.parse(fs.readFileSync(path.join(root,'artifacts/compile-report.json'),'utf8'));
+const sourceInputs=Object.fromEntries(Object.entries(compiled.sourceHashes).map(([f,d])=>[f.startsWith('@')?'node_modules/'+f:f,d]));
+for(const [f,d]of Object.entries(sourceInputs))if(hash(f)!==d)throw Error('Candidate compiled source changed:'+f);
+compileRecipientFixtures();
+const files=['scripts/test-recipient-adversarial.mjs','scripts/compile-recipient-fixtures.mjs','test/adversarial-fixtures/Recipients.sol','test/recipient-adversarial.test.mjs','test/local-chain.mjs','package-lock.json','evidence/recipient-adversarial-fixtures.json',...fs.readdirSync(path.join(root,'artifacts')).filter(f=>f.endsWith('.json')).map(f=>'artifacts/'+f)];
+const inputHashes={...sourceInputs,...Object.fromEntries(files.map(f=>[f,hash(f)]))};const child=spawn(process.execPath,['--test','--test-concurrency=1','--test-reporter=tap','test/recipient-adversarial.test.mjs'],{cwd:root,stdio:['ignore','pipe','pipe']});let output='';for(const stream of [child.stdout,child.stderr])stream.on('data',d=>{output+=d;process.stdout.write(d);});const exitCode=await new Promise(resolve=>child.on('exit',resolve)),changed=Object.entries(inputHashes).filter(([f,d])=>hash(f)!==d).map(([f])=>f);
+fs.writeFileSync(path.join(root,'evidence/recipient-adversarial-tests.tap'),output);const evidenceHashes=Object.fromEntries(['evidence/recipient-adversarial-tests.tap','evidence/recipient-adversarial-walkthrough.json'].filter(f=>fs.existsSync(path.join(root,f))).map(f=>[f,hash(f)]));
+const result={at:new Date().toISOString(),exitCode,passed:Number(output.match(/# pass (\d+)/)?.[1]??0),failed:Number(output.match(/# fail (\d+)/)?.[1]??0),inputHashes,evidenceHashes,unchangedInputs:changed.length===0,changed,localOnly:true,remoteWrites:false,realWalletUsed:false,independentSecurityReview:false};fs.writeFileSync(path.join(root,'evidence/recipient-adversarial-test-result.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({exitCode,passed:result.passed,failed:result.failed,unchangedInputs:result.unchangedInputs}));if(exitCode!==0||changed.length)process.exitCode=1;

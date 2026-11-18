@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ECHO Launch compact read-only review summary",
+  "type": "object",
+  "required": ["schema", "sourceSchema", "id", "fullManifestFile", "fullManifestRequired", "summaryIsCompleteManifest", "sourceConfigDigest", "executionReady", "chainId", "project", "rules", "economics", "contracts", "readiness"],
+  "properties": {
+    "schema": {"const": "echo-launch-review-summary/v1"},
+    "sourceSchema": {"const": "echo-launch-local/v2"},
+    "fullManifestRequired": {"const": true},
+    "summaryIsCompleteManifest": {"const": false},
+    "sourceConfigDigest": {"type": ["string", "null"]},
+    "chainId": {"const": 56},
+    "executionReady": {"const": false},
+    "contracts": {"type": "object", "additionalProperties": {"type": "null"}},
+    "readiness": {"type": "object", "additionalProperties": {"const": false}},
+    "metadata": {"type": ["object", "null"], "properties": {"count": {"type": "integer", "minimum": 0}, "completeRecordsIncluded": {"const": false}, "firstNames": {"type": "array", "maxItems": 3}}}
+  },
+  "$comment": "The digest references the complete exported manifest, not this abbreviated summary. Full metadata/content verification requires that file. This is not an executable transaction or wallet-authority envelope."
+}

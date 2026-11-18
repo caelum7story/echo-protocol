@@ -1,0 +1,24 @@
+// Read-only production deployment inspection. No signing or execute operation.
+import fs from 'node:fs/promises';import path from 'node:path';import {spawn}from'node:child_process';import{FetchRequest,JsonRpcProvider,formatEther}from'ethers';import{buildLaunchDeploymentPlan,inspectDeploymentIntent}from'./prepare-deployment.mjs';import{OfficialWalletReviews}from'../lib/official-wallet-review.mjs';
+const root=path.resolve(import.meta.dirname,'..'),out=process.argv[2];if(!out||!path.isAbsolute(out))throw Error('EXPLICIT_OUTPUT_DIRECTORY_REQUIRED');await fs.mkdir(out,{recursive:true});
+const cli='C:/Users/PC/AppData/Roaming/npm/node_modules/@binance/agentic-wallet/dist/index.js';
+function run(args,{input,entry=cli}={}){return new Promise((resolve,reject)=>{const child=spawn(process.execPath,[entry,...args],{stdio:['pipe','pipe','pipe'],windowsHide:true,env:{...process.env,NODE_USE_ENV_PROXY:'1'}});let stdout='',size=0;const timer=setTimeout(()=>child.kill(),45000);child.stdout.on('data',b=>{size+=b.length;if(size>1048576){child.kill();return;}stdout+=b;});child.stderr.resume();child.on('error',reject);child.on('close',()=>{clearTimeout(timer);try{resolve(JSON.parse(stdout));}catch{reject(Error('OFFICIAL_CLI_RESULT_UNAVAILABLE'));}});child.stdin.end(input?JSON.stringify(input)+'\n':undefined);});}
+const status=await run(['wallet','status','--json']),settings=await run(['wallet','settings','--json']);
+const report={schema:'echo-launch-mainnet-readiness/v1',observedAt:new Date().toISOString(),signing:false,broadcast:false,walletConnected:status.data?.status==='CONNECTED',developerModeEnabled:settings.data?.devMode?.enabled===true};
+if(!report.walletConnected||!report.developerModeEnabled)throw Error('OFFICIAL_WALLET_NOT_READY');
+const spec=JSON.parse(await fs.readFile(path.join(root,'release/deployment-spec.confirmed.json'),'utf8')),plan=await buildLaunchDeploymentPlan(spec),wallet=spec.environment.platformAdmin;
+const address=await run(['wallet','address','--json']);if(!address.data?.addresses?.some(a=>String(a.binanceChainId)==='56'&&a.address.toLowerCase()===wallet.toLowerCase()))throw Error('WALLET_ADDRESS_MISMATCH');
+const request=new FetchRequest('https://bsc-rpc.publicnode.com');request.timeout=15000;const provider=new JsonRpcProvider(request,undefined,{cacheTimeout:-1});
+try{
+ const block=await provider.getBlock('latest'),[balance,gasPrice,latestNonce,pendingNonce]=await Promise.all([provider.getBalance(wallet,block.number),provider.send('eth_gasPrice',[]),provider.getTransactionCount(wallet,'latest'),provider.getTransactionCount(wallet,'pending')]);
+ if(Math.floor(Date.now()/1000)-block.timestamp>120)throw Error('STALE_CHAIN_HEAD');
+ report.wallet=wallet;report.blockNumber=block.number;report.blockHash=block.hash;report.balanceWei=String(balance);report.balanceBNB=formatEther(balance);report.gasPriceWei=String(BigInt(gasPrice));report.latestNonce=latestNonce;report.pendingNonce=pendingNonce;
+ report.tokenFirstSteps=[plan.deployments[0],plan.deployments[2],plan.registrations[1]];report.nftFactoryDeferred=true;
+ for(const intent of [plan.deployments[0],plan.deployments[2]]){const inspection=await inspectDeploymentIntent(provider,intent);if(inspection.status!=='not-deployed')throw Error('DEPLOYMENT_ADDRESS_OCCUPIED');}
+ const first=plan.deployments[0];const gas=await provider.estimateGas({from:wallet,...first.transaction});report.registryEstimatedGas=String(gas);report.registryEstimatedFeeWei=String(gas*BigInt(gasPrice));report.registryEstimatedFeeBNB=formatEther(gas*BigInt(gasPrice));report.registryEstimatedAffordable=balance>=gas*BigInt(gasPrice);
+ const bridge=new OfficialWalletReviews({databasePath:path.join(out,'wallet-reviews.sqlite'),wallet});let review;
+ try{review=await bridge.preview({transaction:{...first.transaction,chainId:56,from:wallet},purpose:'deployment',intentId:first.initCodeHash,context:{label:first.label,predictedAddress:first.predictedAddress,estimatedFeeWei:report.registryEstimatedFeeWei,observedAt:report.observedAt,nonce:latestNonce,gasPriceWei:report.gasPriceWei}});}finally{bridge.close();}
+ report.walletReviewId=review.id??null;report.walletApprovalDigest=review.approvalDigest??null;report.officialPreview=review.preview?{success:true,data:review.preview}:{success:false,error:review.error};
+ report.requiresFreshUserConfirmation=true;report.automaticDistributionEnabled=false;report.automaticDistributionBlocker='OFFICIAL_WALLET_FEE_ENVELOPE_NOT_BOUND';
+ await fs.writeFile(path.join(out,'mainnet-readiness.json'),JSON.stringify(report,null,2)+'\n');const{tokenFirstSteps,...summary}=report;console.log(JSON.stringify({...summary,tokenFirstSteps:tokenFirstSteps.map(s=>({label:s.label,predictedAddress:s.predictedAddress,to:s.transaction.to,value:s.transaction.value,dataBytes:(s.transaction.data.length-2)/2}))}));
+}finally{provider.destroy();}

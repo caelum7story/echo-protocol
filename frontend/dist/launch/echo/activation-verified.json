@@ -1,0 +1,9 @@
+{
+  "status": "mint-open-verified",
+  "block": 132929788,
+  "mintEnabled": true,
+  "totalMinted": 1,
+  "activationHash": "0xa8e638dce3386cdcb264be4d4bf9ef84a01bcf63e86695c7b3b1788eecb6185e",
+  "firstMintConfirmed": true,
+  "mainnetBroadcastByAssistant": false
+}

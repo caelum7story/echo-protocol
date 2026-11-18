@@ -1,0 +1,12 @@
+# ECHO official Agent entry
+
+BNB Chain 56. Official contracts are deployed. The owner activation and the first real Mint have been independently verified. Mint is open; always re-read on-chain switches before any transaction.
+
+Read /agent.json, /network.json and /agent-guide.md. Check pinned runtime hashes, identity ownership, live Mint switches, exact quote value and explicit Mint/gas caps before preparing any signature.
+
+Download the no-key, read-only CLI at /agent/echo-agent.zip. It cannot sign or broadcast. Real signatures use the official Binance Agentic Wallet skill.
+
+The website displays real chain counters and events. Never treat a local estimate, command output, pending hash or a simulated fork result as a confirmed mainnet Mint.
+
+Official website: https://echobsc.fun
+Official Agent guide: https://echobsc.fun/agent-guide.md

@@ -1,0 +1,8 @@
+{
+  "supply": "3",
+  "items": [
+    {"tokenId":"1","imageFile":"echo-sculpture-v4.webp","metadata":{"name":"ECHO Local Content Proof #1","description":"Local verification sample only. This is not a public NFT issuance.","attributes":[{"trait_type":"Local preview edition","value":1}]}},
+    {"tokenId":"2","imageFile":"echo-sculpture-v4.webp","metadata":{"name":"ECHO Local Content Proof #2","description":"Local verification sample only. This is not a public NFT issuance.","attributes":[{"trait_type":"Local preview edition","value":2}]}},
+    {"tokenId":"3","imageFile":"echo-sculpture-v4.webp","metadata":{"name":"ECHO Local Content Proof #3","description":"Local verification sample only. This is not a public NFT issuance.","attributes":[{"trait_type":"Local preview edition","value":3}]}}
+  ]
+}

@@ -1,0 +1,1 @@
+export default {networks:{local:{type:'edr-simulated',chainType:'l1',chainId:1337,hardfork:'shanghai',blockGasLimit:100000000,initialBaseFeePerGas:0,gasPrice:2000000000,allowBlocksWithSameTimestamp:true,initialDate:'2026-11-11T00:00:00Z'}}};

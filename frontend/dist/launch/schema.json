@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ECHO Launch frontend draft",
+  "description": "Local draft only. The app additionally validates links, decimal costs, cross-field caps and totals. Import rebuilds execution-related fields and requires a new user review.",
+  "type": "object",
+  "required": [
+    "schema",
+    "template",
+    "project"
+  ],
+  "properties": {
+    "schema": {
+      "const": "echo-launch-preview/v1"
+    },
+    "template": {
+      "const": "fixed-price-full-raise-v1"
+    },
+    "executionReady": {
+      "const": false
+    },
+    "chainId": {
+      "const": 56
+    },
+    "project": {
+      "type": "object",
+      "required": [
+        "name",
+        "symbol",
+        "tagline",
+        "description",
+        "category",
+        "shares",
+        "allocation",
+        "price",
+        "limit",
+        "maxTx",
+        "liquidity",
+        "days"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 32
+        },
+        "symbol": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Z0-9]{1,9}$"
+        },
+        "tagline": {
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 2000
+        },
+        "category": {
+          "enum": [
+            "tools",
+            "creative",
+            "community"
+          ]
+        },
+        "website": {
+          "type": "string",
+          "description": "Optional HTTPS URL without credentials; empty string is allowed."
+        },
+        "x": {
+          "type": "string",
+          "description": "Optional HTTPS x.com or twitter.com URL without credentials."
+        },
+        "telegram": {
+          "type": "string",
+          "description": "Optional HTTPS t.me or telegram.me URL without credentials."
+        },
+        "cover": {
+          "type": "string",
+          "maxLength": 120000,
+          "description": "Optional HTTPS image URL, or browser-generated JPEG data URL. Empty string is allowed."
+        },
+        "shares": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$",
+          "description": "1–10000000; checked by application."
+        },
+        "allocation": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$",
+          "description": "1–1000000000 tokens per share; checked by application."
+        },
+        "price": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,18})?$",
+          "description": "Above 0 and at most 100 BNB per share; app checks bounds."
+        },
+        "limit": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$",
+          "description": "1–10000 and not above total shares."
+        },
+        "maxTx": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$",
+          "description": "1–100 and not above identity lifetime cap."
+        },
+        "liquidity": {
+          "type": "string",
+          "pattern": "^(5[0-9]|[6-9][0-9]|100)$"
+        },
+        "days": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$",
+          "description": "1–30 days from the future official start."
+        }
+      },
+      "additionalProperties": false
+    },
+    "contracts": {
+      "type": "object",
+      "properties": {
+        "launch": {
+          "type": "null"
+        },
+        "token": {
+          "type": "null"
+        },
+        "registry": {
+          "type": "null"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": true
+}

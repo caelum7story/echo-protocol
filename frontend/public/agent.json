@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "name": "ECHO Genesis Mint",
+  "description": "Official Agent-only ECHO Mint on BNB Chain. Read state, check identity, prepare a bounded unsigned transaction, and verify delivery.",
+  "chainId": 56,
+  "officialOrigin": "https://echobsc.fun",
+  "status": "mint-open",
+  "executionReady": true,
+  "integrationReady": true,
+  "mintContract": "0xe90D5BEb063B8df8c76AaF2B0da839cD4B19f55f",
+  "tokenContract": "0xB3ca4b947872f92307bCB5b69Fb3a675ABfD8F41",
+  "identityRegistry": "0x60b9262456de011f7d15a54cdd8c48baaa8b022f",
+  "codeHashes": {
+    "launch": "0x83f141c961d85b0c8dcd3a135a09920a77153eed4fb24cbdbbd8dee91e246d2b",
+    "token": "0x8d1c1f913447975a8e38c73a20be47882d1cb10779664cfc2ff5a676e694b000",
+    "oracle": "0xb69aa0567c761f94d4793049c8de3bb54b6363efb69d7dfe6e05058617c4dcf5",
+    "pair": "0x60e4bcb14447615ab7c14fda2c2d70ca4191570e8841c75618e627c8f72662f8"
+  },
+  "network": "/network.json",
+  "guide": "/agent-guide.md",
+  "abi": "/abi/EchoLaunch.json",
+  "readOnlyCli": "/agent/echo-agent.zip",
+  "commands": [
+    "status",
+    "identity",
+    "quote",
+    "receipt",
+    "activity",
+    "maintenance"
+  ],
+  "walletSkill": "binance-agentic-wallet",
+  "privateKeysRequired": false,
+  "tokenApprovalRequired": false,
+  "automaticBroadcast": false,
+  "quoteLifetimeSeconds": 300,
+  "maximumContractTtlSeconds": 600,
+  "guards": {
+    "configured": true,
+    "requiresExecutionReady": true,
+    "requiresOnchainMintEnabled": true,
+    "requiresUnpausedAndNotRetired": true,
+    "requiresRuntimeCodeHashMatch": true
+  },
+  "cliArchiveSha256": "573e18a1c986e7d4dbfc5276ebc82aae20dd73b3c80d69b8d25cc65a860dc407",
+  "cliFiles": {
+    "chain.mjs": "99133571d77e0884e03e5a2d0c9fd4394ce656c6bee503482c537cd24a66cbe4",
+    "deployment.mjs": "574427663ef146cb06b5cb7b06a1a4eaccb0e542692969bdbd91206a356331b0",
+    "agent/echo-agent.mjs": "280f601e645dcfc182f39b437ff8a42ebbf6dc491266f2d3395d72b8c3e51bd1",
+    "vendor/ethers.mjs": "b016b0c3898c78fd8156466eb1ff1f42c9df951c2f0d64c9bdf799fe745b0a6c"
+  },
+  "mintEnabled": true,
+  "activationRequired": false,
+  "readinessMode": "local-integration-ready-and-live-onchain-gates-required",
+  "officialOrigins": [
+    "https://echobsc.fun",
+    "https://echo-mint-lab-1105.zestyyew1024.chatgpt.site"
+  ],
+  "activationTransaction": "0xa8e638dce3386cdcb264be4d4bf9ef84a01bcf63e86695c7b3b1788eecb6185e",
+  "stateObservedAtBlock": 132929788,
+  "referralRewardPolicy": {
+    "tokensPerSuccessfulInvite": 200,
+    "attribution": "EchoLaunch.successfulInvites",
+    "directOnly": true,
+    "distinctFirstMintOnly": true,
+    "includesFreeFirstMint": true,
+    "selfReferralEligible": false,
+    "existingRecordsIncluded": true,
+    "extraPaidMintAllowancePerInvite": 1,
+    "source": "existing-reward-reserve",
+    "distribution": "project-wallet-transfer-after-pool-opening",
+    "automaticOnchainPayout": false,
+    "rules": "/referral-rewards.md"
+  },
+  "growthCampaign": {
+    "id": "echo-paid-invite-v1",
+    "budgetWei": "200000000000000000",
+    "buyerRebateBps": 500,
+    "inviterRebateBps": 500,
+    "eligibility": "first-successful-paid-order-per-invited-identity",
+    "attribution": "chain-recorded-firstReferrer",
+    "budgetOrder": "chain-order-whole-orders-stop-when-insufficient",
+    "source": "project-30-percent-revenue",
+    "distribution": "project-wallet-reconciliation",
+    "automaticPayout": false,
+    "leaderboard": {
+      "basis": "distinct-direct-invited-identities-with-first-paid-mint",
+      "settles": "first-pool-opening-transaction-inclusive",
+      "prizesEcho": [
+        "25000",
+        "15000",
+        "10000"
+      ],
+      "prizePoolEcho": "50000",
+      "source": "existing-echo-reward-reserve",
+      "tieBreak": "earlier-event-reaching-the-score",
+      "minimumScore": 1,
+      "unusedPrizes": "remain-in-reward-reserve"
+    }
+  }
+}

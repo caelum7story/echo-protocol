@@ -1,0 +1,11 @@
+{
+  "source": "outputs/echo-launch-contracts-v1/lib/agent-client.mjs",
+  "sourceSha256": "df460bde5dfffd67f2964668bca94926c099337fcaae42f2a975f9fabaadac09",
+  "workerSha256": "506bd71201ece3cfa192257261f7f54053774b9620e9034826fb3bb0d54ba463",
+  "changes": [
+    "Replace filesystem artifact loading with bundled ABIs",
+    "Use Web Crypto only for read-side request IDs",
+    "Reject NFT content-file operations;public storage deferred"
+  ],
+  "financialExecutionAllowed": false
+}

@@ -1,0 +1,48 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1794728708214,
+      "tag": "0000_amazing_doomsday",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1794758967981,
+      "tag": "0001_adorable_rockslide",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1794759142916,
+      "tag": "0002_unique_firelord",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1794759976105,
+      "tag": "0003_silky_sprite",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1794946342437,
+      "tag": "0004_past_baron_strucker",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1794948131127,
+      "tag": "0005_illegal_luminals",
+      "breakpoints": true
+    }
+  ]
+}

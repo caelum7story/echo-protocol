@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ECHO Launch browser-local reservation and delivery evidence",
+  "type": "object",
+  "required": ["schema", "projectId", "projectType", "identity", "identityVerification", "status", "units", "principalWei", "reservedTokenIds", "metadata", "ledger", "chainId", "transactionHash", "chainVerified", "executionReady", "unsignedTransaction"],
+  "properties": {
+    "schema": {"const": "echo-launch-position-evidence/v1"},
+    "projectId": {"type": "string"},
+    "projectType": {"enum": ["nft", "token"]},
+    "projectConfigDigest": {"type": ["string", "null"]},
+    "identity": {"type": "string", "pattern": "^[a-z0-9]{1,64}\\.ai$"},
+    "identityVerification": {"const": "format-only; ownership and wallet binding not verified"},
+    "status": {"enum": ["none", "reserved", "refundable", "refunded", "exited", "claimable", "pending-distribution", "delivered"]},
+    "lastExit": {"type": "boolean"},
+    "readSnapshot": {"type": "object", "required": ["schema", "capturedAt", "projectId", "projectConfigDigest", "snapshotDigest", "executionReady"], "properties": {"schema": {"const": "echo-launch-read-snapshot/v1"}, "executionReady": {"const": false}, "chainVerified": {"const": false}}},
+    "units": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,15})$"},
+    "principalWei": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,77})$"},
+    "settlement": {"oneOf": [{"type": "null"}, {"type": "object", "required": ["kind", "units", "principalWei", "refundWei", "platformFeeWei", "recordedAt", "scope", "chainVerified", "transactionHash"], "properties": {
+      "kind": {"enum": ["full-refund", "voluntary-full-position-exit"]},
+      "units": {"type": "string", "pattern": "^[1-9][0-9]{0,15}$"},
+      "principalWei": {"type": "string", "pattern": "^[1-9][0-9]{0,77}$"},
+      "refundWei": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,77})$"},
+      "platformFeeWei": {"type": "string", "pattern": "^(0|[1-9][0-9]{0,77})$"},
+      "recordedAt": {"type": "string", "format": "date-time"}, "scope": {"const": "browser-local-only"}, "chainVerified": {"const": false}, "transactionHash": {"type": "null"}
+    }}]},
+    "reservedTokenIds": {"type": "array", "maxItems": 5000, "items": {"type": "object", "required": ["first", "last"], "properties": {"first": {"type": "string", "pattern": "^[1-9][0-9]{0,15}$"}, "last": {"type": "string", "pattern": "^[1-9][0-9]{0,15}$"}}}},
+    "metadata": {"type": ["array", "null"]},
+    "ledger": {"type": "object"},
+    "chainId": {"const": 56},
+    "transactionHash": {"type": "null"},
+    "chainVerified": {"const": false},
+    "executionReady": {"const": false},
+    "unsignedTransaction": {"type": "null"}
+  },
+  "$comment": "Runtime checks reconcile all local identities, interval uniqueness, counts, price/principal, refunded ranges and the reservation high-water mark. Schema shape alone does not prove these invariants. This is not an NFT certificate, author signature, chain receipt or wallet authorization. Imported history cannot become active session authority."
+}

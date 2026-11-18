@@ -1,0 +1,10 @@
+import http from 'node:http';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {openLocalD1} from './local-d1.mjs';
+import worker from '../dist/server/index.js';
+const root=path.resolve(import.meta.dirname,'..');await fs.mkdir(path.join(root,'.preview'),{recursive:true});
+const db=await openLocalD1();
+const server=http.createServer(async(req,res)=>{try{const response=await worker.fetch(new Request('http://127.0.0.1:4230'+req.url,{method:req.method,headers:req.headers}),{DB:db});res.writeHead(response.status,Object.fromEntries(response.headers));res.end(req.method==='HEAD'?undefined:Buffer.from(await response.arrayBuffer()));}catch{res.writeHead(503);res.end('Preview unavailable');}});
+server.listen(4230,'127.0.0.1',()=>console.log('Local: http://127.0.0.1:4230/launch/'));
+const close=()=>server.close(()=>db.close());process.on('SIGINT',close);process.on('SIGTERM',close);

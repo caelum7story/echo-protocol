@@ -1,0 +1,31 @@
+{
+  "name": "echo-launch-contracts-v1",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "compile": "node scripts/compile.mjs",
+    "test": "node scripts/compile.mjs && node --test --test-concurrency=1 test/contracts.test.mjs",
+    "audit:deps": "node scripts/dependency-audit.mjs"
+  },
+  "devDependencies": {
+    "@ipld/car": "5.4.7",
+    "@nomicfoundation/edr": "0.25.1",
+    "@openzeppelin/contracts": "5.4.0",
+    "@openzeppelin/merkle-tree": "1.0.8",
+    "blockstore-core": "7.0.1",
+    "ethers": "6.17.0",
+    "ipfs-unixfs-exporter": "16.2.3",
+    "ipfs-unixfs-importer": "17.1.1",
+    "multiformats": "14.0.5",
+    "solc": "0.8.38"
+  },
+  "overrides": {
+    "solc": {
+      "tmp": "0.2.7"
+    },
+    "@metamask/utils": {
+      "uuid": "11.1.1"
+    }
+  }
+}

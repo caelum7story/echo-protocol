@@ -1,0 +1,11 @@
+{
+  "baseCommit": "3fbd61f75c2d528365976bd729dac1e4dbc870b8",
+  "files": {
+    "index.html": "336fc764dc989c5d784d20fbc7b504f628875dc9a3d259c18cb00d7e6b6e4ddb",
+    "og.jpg": "82d81b0103bc60963d0c7e58772db45880225f8e1e7fcd9661ab9df4b716fe4c",
+    "agent-guide.md": "3e365d84b64afa0e67a6348baeff0f4474eb4ca85dd030b31435220c624e1a41",
+    "live-brief.mjs": "c2d859c9a272584fb641c60d14b3486ee4fc265a607cbd165aa77a5018074b72",
+    "assets/echo-social-card-v1.jpg": "82d81b0103bc60963d0c7e58772db45880225f8e1e7fcd9661ab9df4b716fe4c",
+    "assets/echo-sculpture-v4.webp": "f5bbc97839a5df5d0a53b7b1e26fa5551ef805b6be29f6cd112bf0f9363aa285"
+  }
+}

@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {compile,root} from './compile.mjs';
+const compiled=compile(),sha=f=>createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex');
+const inputs=['scripts/prepare-deployment.mjs','scripts/test-deployment-route.mjs','test/deployment-route.test.mjs','test/local-chain.mjs','lib/agent-client.mjs','references/deterministic-deployment/public-capture.json','references/deterministic-deployment/README.md','references/deterministic-deployment/source.yul','references/deterministic-deployment/LICENSE'];
+const inputHashes=Object.fromEntries(inputs.map(f=>[f,sha(f)])),artifactHashes=Object.fromEntries(fs.readdirSync(path.join(root,'artifacts')).filter(f=>f.endsWith('.json')).map(f=>['artifacts/'+f,sha('artifacts/'+f)]));
+const child=spawn(process.execPath,['--test','--test-concurrency=1','--test-reporter=tap','test/deployment-route.test.mjs'],{cwd:root,stdio:['ignore','pipe','pipe']});let output='';
+for(const pipe of [child.stdout,child.stderr])pipe.on('data',d=>{output+=d;process.stdout.write(d);});
+const exitCode=await new Promise(resolve=>child.on('exit',resolve));fs.mkdirSync(path.join(root,'evidence'),{recursive:true});
+const mismatches=Object.entries({...inputHashes,...artifactHashes}).filter(([f,h])=>sha(f)!==h).map(([f])=>f);
+fs.writeFileSync(path.join(root,'evidence/deployment-route-tests.tap'),output);
+fs.writeFileSync(path.join(root,'evidence/deployment-route-result.json'),JSON.stringify({observedAt:new Date().toISOString(),exitCode,passed:Number(output.match(/# pass (\d+)/)?.[1]??0),failed:Number(output.match(/# fail (\d+)/)?.[1]??0),chainId:31337,sourceHashes:compiled.sourceHashes,inputHashes,artifactHashes,currentInputsMatch:mismatches.length===0,mismatches,walkthroughSha256:sha('evidence/deployment-route-walkthrough.json'),tapSha256:sha('evidence/deployment-route-tests.tap'),publicTransactions:false,realWalletUsed:false,binanceWalletPreviewVerified:false,independentSecurityReview:false,productionReady:false},null,2)+'\n');process.exitCode=exitCode===0&&mismatches.length===0?0:1;

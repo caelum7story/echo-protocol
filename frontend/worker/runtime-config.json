@@ -1,0 +1,69 @@
+{
+  "schema": "echo-launch-runtime/v1",
+  "chainId": 56,
+  "mode": "production",
+  "executionReady": true,
+  "registry": {
+    "address": "0x03a972943388833d26f47A51c3C28B164ac8A317",
+    "runtimeHash": "0xed25e9bb0253327eb9d7fc49a370856f891201d8201553eb44a8ca1df87d684a",
+    "deploymentBlock": 133730054
+  },
+  "approvedTemplates": [
+    {
+      "kind": 2,
+      "versionId": "0x112ea9a940129a35bb0be134ad71302fb6eefba6b480a16b4166077726e4df80",
+      "factory": "0x8564076727E84bBEf05dBF6f50feC16A1d864266",
+      "factoryRuntimeHash": "0x61b18b89d724004c87e9d32554e507b3fa96f7216336b1bff778928915a34451",
+      "creationCodeHash": "0x7b989e16fb299aba3322db4eaf7f9ce6bfcc3f286479da24cc5bae5257e84916",
+      "reviewDocumentHash": "0xd1765c2b33ade1189d1da1f7e417a7d59c1731ce4a4cf40db4f953def62d6279"
+    }
+  ],
+  "minConfirmations": 12,
+  "maxBlockAgeSeconds": 120,
+  "platformAdmin": "0x0282F738816d39bB07EAD0d5ea626Ff1b1FC1761",
+  "platformRecipient": "0x0282F738816d39bB07EAD0d5ea626Ff1b1FC1761",
+  "features": {
+    "tokenCreation": true,
+    "tokenSubscriptions": true,
+    "nftCreation": false,
+    "nftSubscriptions": false,
+    "nftPublicStorageDeferred": true
+  },
+  "review": {
+    "independentAudit": false,
+    "staticHighFindings": 4,
+    "status": "local-verification-completed;independent-review-not-provided"
+  },
+  "releasePhase": "token-mainnet-public-beta",
+  "automaticDistributionEnabled": false,
+  "deployments": [
+    {
+      "label": "Registry",
+      "transactionHash": "0xf23a15aeadb5196aadc766bed8a468692ebcf460461b39a700d5a863814150ee"
+    },
+    {
+      "label": "Token factory",
+      "transactionHash": "0xee098c39d739026350ced0456dd05aa34a97e555407ec5c63e5b689d5998f013"
+    },
+    {
+      "label": "Register token template",
+      "transactionHash": "0x8cc4a3372d8b4165190eff6a05f3bebd3dfad6c5944bd1b82a2ef950678fcb65"
+    }
+  ],
+  "distributor": {
+    "enabled": true,
+    "wallet": "0x329e2f9e3fd0316C56a0A1b20B66f723268216c9",
+    "runtimeDigest": "28b0a086946bd4e7b59865a4f044439e0e3825cfdbe0a8e9a0ae796f80722125",
+    "authorityHash": "8120fc16bde948a04a645a2e82210a5afb803d2e4e0f3ecd24851c20d525248a",
+    "expiresAtMs": 1797342176677,
+    "limits": {
+      "maxTotalGasWei": "900000000000000",
+      "maxDailyWei": "300000000000000",
+      "maxPerTxWei": "100000000000000",
+      "maxGasUnits": "1000000",
+      "maxFeePerGasWei": "100000000",
+      "maxBatchSize": 10,
+      "minimumBalanceWei": "100000000000000"
+    }
+  }
+}

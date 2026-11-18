@@ -1,0 +1,25 @@
+{
+  "name": "echo-mint-preview",
+  "version": "1.1.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test test/*.test.mjs",
+    "build:worker": "node scripts/build-worker.mjs",
+    "db:generate": "drizzle-kit generate",
+    "test:launch-worker": "node --test --test-concurrency=1 test/launch-worker*.test.mjs",
+    "dev:worker": "node --use-env-proxy scripts/dev-worker.mjs"
+  },
+  "dependencies": {
+    "@binance/w3w-ethereum-provider": "1.1.13",
+    "buffer": "6.0.3",
+    "drizzle-orm": "0.45.2",
+    "ethers": "6.17.0",
+    "qrcode": "^1.5.4"
+  },
+  "devDependencies": {
+    "drizzle-kit": "0.31.10",
+    "esbuild": "0.28.2"
+  }
+}

@@ -1,0 +1,362 @@
+{
+  "scanner": "Slither0.11.6",
+  "counts": {
+    "High": 4,
+    "Medium": 8,
+    "Low": 29,
+    "Informational": 9
+  },
+  "rawSha256": "1610d07af372c2bbf677d55e3679fc5e5c5aed884cea307cda39214d4c8f8445",
+  "findings": [
+    {
+      "id": "1c16fa2e5963b926c4c901f7594ade02db7cab5c667de42cb88bc1f33be4e338",
+      "check": "arbitrary-send-eth",
+      "impact": "High",
+      "confidence": "Medium",
+      "description": "LaunchEscrow.withdrawCreditFor(address) (src/LaunchEscrow.sol#134-142) sends eth to arbitrary user\n\tDangerous calls:\n\t- (ok,None) = recipient.call{value: amount}() (src/LaunchEscrow.sol#139)\n"
+    },
+    {
+      "id": "a3a8dc68d321f007cb8032a40e428900839dae077ffe04c8e3fe6e18a9e1ffc8",
+      "check": "arbitrary-send-eth",
+      "impact": "High",
+      "confidence": "Medium",
+      "description": "LaunchToken.withdrawTaxFor(address) (src/LaunchToken.sol#176-184) sends eth to arbitrary user\n\tDangerous calls:\n\t- (ok,None) = recipient.call{value: due}() (src/LaunchToken.sol#181)\n"
+    },
+    {
+      "id": "df457fcf0dd545f5719082cbe0cf2a88b438b7e9e3ab7fde2469787e308476d7",
+      "check": "reentrancy-balance",
+      "impact": "High",
+      "confidence": "Medium",
+      "description": "Reentrancy in TokenLaunch.finalizePool() (src/TokenLaunch.sol#131-172):\n\tExternal call allowing reentrancy:\n\t- lp = p.mint(LP_DESTINATION) (src/TokenLaunch.sol#157)\n\tBalance read before the call:\n\t- lpBefore = p.balanceOf(LP_DESTINATION) (src/TokenLaunch.sol#156)\n\tPossible stale balance used after the call in a condition:\n\t- lp == 0 || p.balanceOf(LP_DESTINATION) < lpBefore + lp (src/TokenLaunch.sol#158)\n\t\t- stale variable `lpBefore`\n"
+    },
+    {
+      "id": "1ff04993b58c02aee520510e3f5c9ae483295f99e55bdbdd68a02751f288cfd1",
+      "check": "reentrancy-eth",
+      "impact": "High",
+      "confidence": "Medium",
+      "description": "Reentrancy in TokenLaunch.finalizePool() (src/TokenLaunch.sol#131-172):\n\tExternal calls:\n\t- IWBNB(wbnb).deposit{value: bnb}() (src/TokenLaunch.sol#154)\n\t- lp = p.mint(LP_DESTINATION) (src/TokenLaunch.sol#157)\n\t- token.burnSaleInventory(burn) (src/TokenLaunch.sol#164)\n\tExternal calls sending eth:\n\t- IWBNB(wbnb).deposit{value: bnb}() (src/TokenLaunch.sol#154)\n\tState variables written after the call(s):\n\t- poolCreated = true (src/TokenLaunch.sol#166)\n\tTokenLaunch.poolCreated (src/TokenLaunch.sol#21) can be used in cross function reentrancies:\n\t- TokenLaunch.poolCreated (src/TokenLaunch.sol#21)\n\t- TokenLaunch.refundEligible() (src/TokenLaunch.sol#83-89)\n"
+    },
+    {
+      "id": "f31b55b0a321623add0bcbb6c16611ade1551674c05ced8deb6a0590eeabb6f2",
+      "check": "divide-before-multiply",
+      "impact": "Medium",
+      "confidence": "Medium",
+      "description": "LaunchToken._cumulative() (src/LaunchToken.sol#95-107) performs a multiplication on the result of a division:\n\t- value += priceX112 * elapsed (src/LaunchToken.sol#105)\n\t- priceX112 = (uint256(r0) << 112) / r1 (src/LaunchToken.sol#104)\n"
+    },
+    {
+      "id": "23e9c1a25e3b1e7f53079c0d5060c2845ece95b148a01a47f71a5fc4f05c3c2a",
+      "check": "incorrect-equality",
+      "impact": "Medium",
+      "confidence": "High",
+      "description": "LaunchToken.conversionQuote(uint256) (src/LaunchToken.sol#130-153) uses a dangerous strict equality:\n\t- ! launched || averagePriceX112 == 0 || averageUpdatedAt == 0 || block.timestamp - averageUpdatedAt > oracleMaxAge (src/LaunchToken.sol#131-132)\n"
+    },
+    {
+      "id": "44c5d30dc5b96c0b6e5e5e5800f692f5ed17d265137f7e5a4dc2c8f9a0180639",
+      "check": "incorrect-equality",
+      "impact": "Medium",
+      "confidence": "High",
+      "description": "LaunchToken.conversionQuote(uint256) (src/LaunchToken.sol#130-153) uses a dangerous strict equality:\n\t- minimumBnb == 0 (src/LaunchToken.sol#147)\n"
+    },
+    {
+      "id": "909de5d17679da603785ad32b08fe3216db1b8d956b26742d36beb9c834c8f15",
+      "check": "incorrect-equality",
+      "impact": "Medium",
+      "confidence": "High",
+      "description": "LaunchEscrow.closeTime() (src/LaunchEscrow.sol#87-89) uses a dangerous strict equality:\n\t- soldOutAt == 0 (src/LaunchEscrow.sol#88)\n"
+    },
+    {
+      "id": "b393568483d0df606d56d2387e0609035ad0e4504a88b4fa12f7c13765467b7c",
+      "check": "incorrect-equality",
+      "impact": "Medium",
+      "confidence": "High",
+      "description": "LaunchEscrow.totalPause() (src/LaunchEscrow.sol#79-81) uses a dangerous strict equality:\n\t- pausedAt == 0 (src/LaunchEscrow.sol#80)\n"
+    },
+    {
+      "id": "d63de555caae58748dec23f0d3e541b78dee4ffdeb6926fd65bbac07d2af401c",
+      "check": "reentrancy-no-eth",
+      "impact": "Medium",
+      "confidence": "Medium",
+      "description": "Reentrancy in NftLaunch.claimFor(address,uint256[]) (src/NftLaunch.sol#75-84):\n\tExternal calls:\n\t- _safeMint(wallet,id) (src/NftLaunch.sol#81)\n\t\t- retval = IERC721Receiver(to).onERC721Received(operator,from,tokenId,data) (@openzeppelin/contracts/token/ERC721/utils/ERC721Utils.sol#33-47)\n\t\t- ERC721Utils.checkOnERC721Received(_msgSender(),address(0),to,tokenId,data) (@openzeppelin/contracts/token/ERC721/ERC721.sol#289)\n\tState variables written after the call(s):\n\t- ++ deliveredCount (src/NftLaunch.sol#80)\n\tNftLaunch.deliveredCount (src/NftLaunch.sol#14) can be used in cross function reentrancies:\n\t- NftLaunch.deliveredCount (src/NftLaunch.sol#14)\n"
+    },
+    {
+      "id": "5798215b1660e5b8408c431562f02aa5b742acd51a9ae4c0c060076e2d4aec59",
+      "check": "unused-return",
+      "impact": "Medium",
+      "confidence": "Medium",
+      "description": "TokenLaunch.finalizePool() (src/TokenLaunch.sol#131-172) ignores return value by (r0,r1,None) = p.getReserves() (src/TokenLaunch.sol#136)\n"
+    },
+    {
+      "id": "7dd5f4431178b54355fdbe639bfc9fe44d46079b618fe6af1f405f4893d03cf5",
+      "check": "unused-return",
+      "impact": "Medium",
+      "confidence": "Medium",
+      "description": "LaunchToken.conversionQuote(uint256) (src/LaunchToken.sol#130-153) ignores return value by (r0,r1,None) = IV2Pair(pair).getReserves() (src/LaunchToken.sol#133)\n"
+    },
+    {
+      "id": "067b5c45a27a1fc4eb71d69551cb3520fe97356751f136d3f1ab5160984cfa6d",
+      "check": "missing-zero-check",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "LaunchEscrow.withdrawCreditFor(address).recipient (src/LaunchEscrow.sol#134) lacks a zero-check on :\n\t\t- (ok,None) = recipient.call{value: amount}() (src/LaunchEscrow.sol#139)\n"
+    },
+    {
+      "id": "18fcf74227453bc61fcc4f3394b024129c11e467f7d76041c10ab3e99bb6e068",
+      "check": "missing-zero-check",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "TokenLaunch.constructor(LaunchEscrow.BaseConfig,uint256,string,string,address,address,address,uint256,uint256).wbnb_ (src/TokenLaunch.sol#49) lacks a zero-check on :\n\t\t- wbnb = wbnb_ (src/TokenLaunch.sol#53)\n"
+    },
+    {
+      "id": "61380cfb41ddc906b7ebdecf66c2acfaad45ecbf3deaf3468e4b44309c7de89c",
+      "check": "missing-zero-check",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "LaunchToken.withdrawTaxFor(address).recipient (src/LaunchToken.sol#176) lacks a zero-check on :\n\t\t- (ok,None) = recipient.call{value: due}() (src/LaunchToken.sol#181)\n"
+    },
+    {
+      "id": "3f5e1333face6dcf0208190495efd8a6d1d5af65953afbaa38355de7aca6103c",
+      "check": "calls-loop",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "TokenLaunch._deliver(bytes32) (src/TokenLaunch.sol#174-183) has external calls inside a loop: ! token.transfer(p.wallet,amount) (src/TokenLaunch.sol#180)\n\tCalls stack containing the loop:\n\t\tTokenLaunch.distribute(bytes32[])\n"
+    },
+    {
+      "id": "0004eab779fd2955dedf89259dcb9dbf3f78c165980458ec348e6d253ae7a7fd",
+      "check": "reentrancy-benign",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "Reentrancy in TokenLaunch.finalizePool() (src/TokenLaunch.sol#131-172):\n\tExternal calls:\n\t- IWBNB(wbnb).deposit{value: bnb}() (src/TokenLaunch.sol#154)\n\t- lp = p.mint(LP_DESTINATION) (src/TokenLaunch.sol#157)\n\tExternal calls sending eth:\n\t- IWBNB(wbnb).deposit{value: bnb}() (src/TokenLaunch.sol#154)\n\tState variables written after the call(s):\n\t- liquidityReceipt = lp (src/TokenLaunch.sol#159)\n"
+    },
+    {
+      "id": "1752a7915e0f3c4e652aeb0c519cba7eea35c48b6a84234e90a2804e840c17cb",
+      "check": "reentrancy-benign",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "Reentrancy in LaunchToken.convertTax(uint256,uint256) (src/LaunchToken.sol#155-174):\n\tExternal calls:\n\t- IV2Router(router).swapExactTokensForETHSupportingFeeOnTransferTokens(amount,minimumBnb,path,address(this),deadline) (src/LaunchToken.sol#164)\n\tState variables written after the call(s):\n\t- _approve(address(this),router,0) (src/LaunchToken.sol#165)\n\t\t- _allowances[owner][spender] = value (@openzeppelin/contracts/token/ERC20/ERC20.sol#280)\n\t- converting = false (src/LaunchToken.sol#166)\n\t- taxBnbCredit[creatorRecipient] += creator (src/LaunchToken.sol#170)\n\t- taxBnbCredit[platformRecipient] += received - creator (src/LaunchToken.sol#171)\n\t- totalTaxBnbCredit += received (src/LaunchToken.sol#172)\n"
+    },
+    {
+      "id": "9ba8abb45e993be48d8f051e1d101496e191f7ca6cc4d44c57905f26e9a62663",
+      "check": "reentrancy-benign",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "Reentrancy in TokenLaunch.finalizePool() (src/TokenLaunch.sol#131-172):\n\tExternal calls:\n\t- IWBNB(wbnb).deposit{value: bnb}() (src/TokenLaunch.sol#154)\n\t- lp = p.mint(LP_DESTINATION) (src/TokenLaunch.sol#157)\n\t- token.burnSaleInventory(burn) (src/TokenLaunch.sol#164)\n\t- token.openTrading() (src/TokenLaunch.sol#167)\n\tExternal calls sending eth:\n\t- IWBNB(wbnb).deposit{value: bnb}() (src/TokenLaunch.sol#154)\n\tState variables written after the call(s):\n\t- _credit(creatorRecipient,creator,TOKEN_CREATOR) (src/TokenLaunch.sol#169)\n\t\t- bnbCredit[recipient] += amount (src/LaunchEscrow.sol#128)\n\t- _credit(platformRecipient,activePrincipal - bnb - creator,TOKEN_PLATFORM) (src/TokenLaunch.sol#170)\n\t\t- bnbCredit[recipient] += amount (src/LaunchEscrow.sol#128)\n\t- _credit(creatorRecipient,creator,TOKEN_CREATOR) (src/TokenLaunch.sol#169)\n\t\t- totalBnbCredit += amount (src/LaunchEscrow.sol#129)\n\t- _credit(platformRecipient,activePrincipal - bnb - creator,TOKEN_PLATFORM) (src/TokenLaunch.sol#170)\n\t\t- totalBnbCredit += amount (src/LaunchEscrow.sol#129)\n"
+    },
+    {
+      "id": "ca98b35ab42ded7b67ab58da1edf1f5458b36830ec0e181d32af412fa7d12469",
+      "check": "reentrancy-benign",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "Reentrancy in TokenLaunch.finalizePool() (src/TokenLaunch.sol#131-172):\n\tExternal calls:\n\t- IWBNB(wbnb).deposit{value: bnb}() (src/TokenLaunch.sol#154)\n\t- lp = p.mint(LP_DESTINATION) (src/TokenLaunch.sol#157)\n\t- token.burnSaleInventory(burn) (src/TokenLaunch.sol#164)\n\tExternal calls sending eth:\n\t- IWBNB(wbnb).deposit{value: bnb}() (src/TokenLaunch.sol#154)\n\tState variables written after the call(s):\n\t- burnedTokens += burn (src/TokenLaunch.sol#165)\n"
+    },
+    {
+      "id": "1bd673dde692c9d60b7ffad7b177ae7af40424d354808562c719777ba08eecc1",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "NftLaunch.finalize() (src/NftLaunch.sol#54-63) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- settled || (! successEligible() && ! refundEligible()) (src/NftLaunch.sol#55)\n"
+    },
+    {
+      "id": "23687e35caa9f17c7ab4ec3cd2509225534036980c43a6045ea7c78fac84d89c",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "LaunchEscrow.constructor(LaunchEscrow.BaseConfig) (src/LaunchEscrow.sol#62-77) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- c.identity.code.length == 0 || c.platformAdmin == address(0) || c.platformRecipient == address(0) || c.creatorRecipient == address(0) || c.startsAt <= block.timestamp || c.startsAt > type()(uint64).max - DURATION || c.unitPrice == 0 || c.capacity == 0 || c.configHash == bytes32(0) || c.capacity > type()(uint256).max / c.unitPrice (src/LaunchEscrow.sol#63-67)\n"
+    },
+    {
+      "id": "28943865a341714e5ec951f39e949678e63928de5b0aabfcc4ec77dfba3b928c",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "LaunchToken.conversionQuote(uint256) (src/LaunchToken.sol#130-153) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- ! launched || averagePriceX112 == 0 || averageUpdatedAt == 0 || block.timestamp - averageUpdatedAt > oracleMaxAge (src/LaunchToken.sol#131-132)\n\t- minimumBnb == 0 (src/LaunchToken.sol#147)\n\t- quoted.length != 2 || quoted[1] < minimumBnb || quoted[1] > Math.mulDiv(referenceQuote,10_000 + MAX_SHORTFALL_BPS,10_000) (src/LaunchToken.sol#151-152)\n"
+    },
+    {
+      "id": "323ff19c6716edb3b3e33274b5fb82cd081f76ea6a1644dc7fba25b8aefa28bc",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "TokenLaunch.earlyExitOpen() (src/TokenLaunch.sol#91-95) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- ! settled && ! refundEligible() && soldOutAt == 0 && block.timestamp >= startsAt && block.timestamp < endsAt - EXIT_CUTOFF (src/TokenLaunch.sol#93-94)\n"
+    },
+    {
+      "id": "3dd183a58a86829f22bd22b992834a7190c40797270a3704deacfe7dfadda193",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "LaunchEscrow._accept(uint256,uint256,bytes32,uint256) (src/LaunchEscrow.sol#111-124) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- deadline < block.timestamp || deadline > block.timestamp + MAX_REQUEST_TTL (src/LaunchEscrow.sol#113)\n"
+    },
+    {
+      "id": "40bd5b0511dd11065b3d2c38d72aa2cdde9bc4acffabc2cfbdf325fac06495fe",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "NftLaunch.refundFor(address) (src/NftLaunch.sol#65-72) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- ! refundEligible() || refunded[wallet] (src/NftLaunch.sol#66)\n"
+    },
+    {
+      "id": "53f5678f04986ab3c9d3fb4d8bbfa1d8994766bd81fa13186e6e1645935b1ea7",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "LaunchEscrow.setPaused(bool) (src/LaunchEscrow.sol#97-109) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- settled || soldOutAt != 0 || cancelled() || block.timestamp >= endsAt (src/LaunchEscrow.sol#99)\n\t- pausedAt != 0 || accumulatedPause >= MAX_PAUSE (src/LaunchEscrow.sol#101)\n\t- pausedAt == 0 (src/LaunchEscrow.sol#104)\n"
+    },
+    {
+      "id": "5c5222b7bc76bf7f49774168371b7d0bbf509b19c830882c7a09e64da91a820c",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "LaunchEscrow.subscriptionsOpen() (src/LaunchEscrow.sol#91-94) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- ! settled && ! cancelled() && pausedAt == 0 && soldOutAt == 0 && block.timestamp >= startsAt && block.timestamp < endsAt (src/LaunchEscrow.sol#92-93)\n"
+    },
+    {
+      "id": "6540782618fd8a1cef7e6128058d8e17030ad7c720eb4c919b0ea4d9b42b42d0",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "TokenLaunchFactory.create(uint256,bytes32,TokenLaunchFactory.Terms,uint256) (src/TokenLaunchFactory.sol#62-84) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- deadline < block.timestamp || deadline > block.timestamp + 300 (src/TokenLaunchFactory.sol#71)\n"
+    },
+    {
+      "id": "760e0bd74f37928abfee0970161dc3c88568537b2097d6d3fb731427ab83b0b8",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "LaunchToken.convertTax(uint256,uint256) (src/LaunchToken.sol#155-174) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- deadline < block.timestamp || deadline > block.timestamp + 900 (src/LaunchToken.sol#156)\n\t- received < minimumBnb (src/LaunchToken.sol#168)\n"
+    },
+    {
+      "id": "86d37a7b8a6efe71e81f0edef7bc5cdf7286fe7661ccb368e3bb3fe73de6a417",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "LaunchEscrow.totalPause() (src/LaunchEscrow.sol#79-81) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- pausedAt == 0 (src/LaunchEscrow.sol#80)\n"
+    },
+    {
+      "id": "8b34bb93809a1346d53531b0081d929b92062bea94fbfc6a6f48e21ec39898e4",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "NftLaunch.refundEligible() (src/NftLaunch.sol#50-52) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- cancelled() || (block.timestamp >= endsAt && soldOutAt == 0) (src/NftLaunch.sol#51)\n"
+    },
+    {
+      "id": "8c4a73a323ffac659608e9df0ab41656a553cc7c42a25579ad469836670520b0",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "TokenLaunch.finalizePool() (src/TokenLaunch.sol#131-172) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- settled || poolCreated || cancelled() || block.timestamp < closeTime() || block.timestamp >= closeTime() + POOL_GRACE || activePrincipal < minimumRaise (src/TokenLaunch.sol#132-133)\n"
+    },
+    {
+      "id": "924f01d8b8a60b94be575b322d0ba5ace4dc18ec750375d53d0daa733cde187a",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "LaunchToken.updateOracle() (src/LaunchToken.sol#110-128) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- elapsed < oracleWindow (src/LaunchToken.sol#115)\n\t- elapsed > oracleMaxAge (src/LaunchToken.sol#116)\n"
+    },
+    {
+      "id": "97ab1b39a0c319df3f904188b4e695b4c743a96bbc1ff65f36313046391468b9",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "NftLaunchFactory.create(uint256,bytes32,NftLaunchFactory.Terms,uint256) (src/NftLaunchFactory.sol#45-62) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- deadline < block.timestamp || deadline > block.timestamp + 300 (src/NftLaunchFactory.sol#54)\n"
+    },
+    {
+      "id": "9b940e9767f579e52e1db9b76593c75145963392d397945cc6ada33bc6f44ce7",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "TokenLaunch.exitAll(uint256,uint256,uint256) (src/TokenLaunch.sol#97-114) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- deadline < block.timestamp || deadline > block.timestamp + MAX_REQUEST_TTL (src/TokenLaunch.sol#98)\n"
+    },
+    {
+      "id": "9cdc6afb70906039c8eb37a71e8228c511f115fe03587b61ba97f26e2696f7f4",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "NftLaunch.claimFor(address,uint256[]) (src/NftLaunch.sol#75-84) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- ! settled || ! successEligible() || ids.length == 0 || ids.length > MAX_BATCH (src/NftLaunch.sol#76)\n"
+    },
+    {
+      "id": "b716d00acf62820fb8ebbf17153e69a1b33de815314f0dc075872bf58bf15c38",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "LaunchEscrow.cancelled() (src/LaunchEscrow.sol#83-85) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- pausedAt != 0 && (totalPause() >= MAX_PAUSE || block.timestamp >= endsAt) (src/LaunchEscrow.sol#84)\n"
+    },
+    {
+      "id": "ba3d72cbe86678bc7e8c8c504468ca46f831936867b03574e625ddba9d93c5f4",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "TokenLaunch.refundEligible() (src/TokenLaunch.sol#83-89) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- block.timestamp < close (src/TokenLaunch.sol#87)\n\t- activePrincipal < minimumRaise || block.timestamp >= close + POOL_GRACE (src/TokenLaunch.sol#88)\n"
+    },
+    {
+      "id": "cc0d39b932fc993a38eaddf5c63624758dfab2e0b8e79d7c1ba110a6cf4b01a3",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "LaunchEscrow.closeTime() (src/LaunchEscrow.sol#87-89) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- soldOutAt == 0 (src/LaunchEscrow.sol#88)\n"
+    },
+    {
+      "id": "df8af06e5bcec02b0deadd6b2815e32635b2ba957d12525aae49275d3ed4fea1",
+      "check": "timestamp",
+      "impact": "Low",
+      "confidence": "Medium",
+      "description": "NftLaunch.successEligible() (src/NftLaunch.sol#46-48) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- ! cancelled() && soldOutAt != 0 (src/NftLaunch.sol#47)\n"
+    },
+    {
+      "id": "613a2241b2604ce8889c06a93514f0a4f46f16a951d2d008488a323f05e1de5f",
+      "check": "assembly",
+      "impact": "Informational",
+      "confidence": "High",
+      "description": "CreationCodeStore.constructor(bytes) (src/TokenLaunchFactory.sol#11-14) uses assembly\n\t- INLINE ASM (src/TokenLaunchFactory.sol#13)\n"
+    },
+    {
+      "id": "b15d9005f01219d5ad1d4cc82fb97468993e3c5efff5b34f7337b91a67740e0c",
+      "check": "assembly",
+      "impact": "Informational",
+      "confidence": "High",
+      "description": "TokenLaunchFactory.create(uint256,bytes32,TokenLaunchFactory.Terms,uint256) (src/TokenLaunchFactory.sol#62-84) uses assembly\n\t- INLINE ASM (src/TokenLaunchFactory.sol#79)\n"
+    },
+    {
+      "id": "d91c4449872e0d91c43890298e0da9b0e846d1da4a80b01ab007794bd8a44e49",
+      "check": "assembly",
+      "impact": "Informational",
+      "confidence": "High",
+      "description": "TokenLaunchFactory.storedCreationCode() (src/TokenLaunchFactory.sol#55-60) uses assembly\n\t- INLINE ASM (src/TokenLaunchFactory.sol#59)\n"
+    },
+    {
+      "id": "2968ad0db704ca766534cf60b3642876fa8785575f4b5c95f7375c8eebd8ee49",
+      "check": "costly-loop",
+      "impact": "Informational",
+      "confidence": "Medium",
+      "description": "NftLaunch.claimFor(address,uint256[]) (src/NftLaunch.sol#75-84) has costly operations inside a loop:\n\t- ++ deliveredCount (src/NftLaunch.sol#80)\n"
+    },
+    {
+      "id": "2dd03bdec4bcf02e5bfc395314eda9252ca57efad54b2086f51c36c39c0f3a8b",
+      "check": "low-level-calls",
+      "impact": "Informational",
+      "confidence": "High",
+      "description": "Low level call in LaunchToken.withdrawTaxFor(address) (src/LaunchToken.sol#176-184):\n\t- (ok,None) = recipient.call{value: due}() (src/LaunchToken.sol#181)\n"
+    },
+    {
+      "id": "415c3d386aee34727c46d00291f41748d293cdcc12850a702a6a7ac4881481f0",
+      "check": "low-level-calls",
+      "impact": "Informational",
+      "confidence": "High",
+      "description": "Low level call in LaunchEscrow.withdrawCreditFor(address) (src/LaunchEscrow.sol#134-142):\n\t- (ok,None) = recipient.call{value: amount}() (src/LaunchEscrow.sol#139)\n"
+    },
+    {
+      "id": "50f9ca5d668505a1906d2a4901fd7252f127e00df2a04cb736200cf03430f312",
+      "check": "naming-convention",
+      "impact": "Informational",
+      "confidence": "High",
+      "description": "Function IV2Router.WETH() (src/DexInterfaces.sol#26) is not in mixedCase\n"
+    },
+    {
+      "id": "24a18a99d7e42aa602ac4be93f13e518360d09e4f60fe68262f544db33a84ebe",
+      "check": "too-many-digits",
+      "impact": "Informational",
+      "confidence": "Medium",
+      "description": "TokenLaunchFactory.constructor(address,bytes32) (src/TokenLaunchFactory.sol#39-45) uses literals with too many digits:\n\t- code = type()(TokenLaunch).creationCode (src/TokenLaunchFactory.sol#42)\n"
+    },
+    {
+      "id": "d188a60bdc08187882268204a0eea2a9d1e1cdeafd2270491ffd4b646e0805f5",
+      "check": "too-many-digits",
+      "impact": "Informational",
+      "confidence": "Medium",
+      "description": "NftLaunchFactory.constructor(address,bytes32) (src/NftLaunchFactory.sol#31-35) uses literals with too many digits:\n\t- creationCodeHash = keccak256(bytes)(type()(NftLaunch).creationCode) (src/NftLaunchFactory.sol#34)\n"
+    }
+  ]
+}

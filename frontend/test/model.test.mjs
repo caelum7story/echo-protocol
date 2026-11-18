@@ -1,0 +1,21 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {DEMO,normalizeIdentity,quoteMint,formatBNB,demoRecipients} from '../dist/model.mjs';
+test('paid-tier quotes preserve exact BNB allocation for all allowed quantities',()=>{for(let q=1;q<=10;q++){const p=quoteMint(q,9000,{freeClaimsUsed:1000});assert.equal(p.costWei,BigInt(q)*DEMO.priceWei);assert.equal(p.liquidityWei+p.treasuryWei,p.costWei);assert.equal(p.liquidityWei*10n,p.costWei*7n);assert.equal(p.tokens,1000*q);}});
+test('each identity gets at most one first free share from an independent global pool',()=>{
+  assert.equal(quoteMint(1).costWei,0n);
+  const first=quoteMint(10);assert.equal(first.freeQuantity,1);assert.equal(first.paidQuantity,9);assert.equal(first.costWei,9n*DEMO.priceWei);
+  assert.equal(quoteMint(1,8000,{freeClaimsUsed:1}).freeQuantity,1);
+  assert.equal(quoteMint(1,9000,{freeClaimsUsed:1000}).freeQuantity,0);
+  assert.equal(quoteMint(9,9999,{identityMinted:1,freeClaimsUsed:1}).freeQuantity,0);
+  assert.throws(()=>quoteMint(10,9999,{identityMinted:1}));
+  assert.throws(()=>quoteMint(1,9990,{identityMinted:10}));
+  assert.equal(quoteMint(1,9990,{identityMinted:10,successfulInvites:1}).costWei,DEMO.priceWei);
+  assert.throws(()=>quoteMint(2,9990,{identityMinted:10,successfulInvites:1}));
+  for(const eligibility of [{identityMinted:-1},{successfulInvites:0.5},{freeClaimsUsed:1001}])assert.throws(()=>quoteMint(1,10000,eligibility));
+  for(const remaining of [-1,10001,1.5,NaN])assert.throws(()=>quoteMint(1,remaining));
+});
+test('invalid quantities and exhausted inventory never produce a quote',()=>{for(const q of ['',0,-1,1.2,11,NaN,'abc',Infinity])assert.throws(()=>quoteMint(q));assert.throws(()=>quoteMint(2,1));assert.throws(()=>quoteMint(1,0));assert.equal(quoteMint(1,1).quantity,1);});
+test('public identity is normalized and invalid labels are rejected',()=>{assert.equal(normalizeIdentity(' Nova.AI '),'nova.ai');assert.equal(normalizeIdentity('alpha123'),'alpha123.ai');for(const v of ['','a b','a-b.ai','<script>','x'.repeat(65)])assert.throws(()=>normalizeIdentity(v));});
+test('demo recipients are distinct candidates, exclude the current identity and preserve per-share allocations',()=>{assert.deepEqual(demoRecipients(['nova.ai','atlas.ai','ATLAS.AI','iris.ai'],'nova.ai',4),['atlas.ai','iris.ai','atlas.ai','iris.ai']);assert.deepEqual(demoRecipients(['nova.ai'],'nova.ai',1),[]);assert.equal(demoRecipients(['atlas.ai','iris.ai'],'nova.ai',10).length,10);});
+test('BNB formatting uses exact decimal strings',()=>{assert.equal(formatBNB(0n),'0');assert.equal(formatBNB(1000000000000000n),'0.001');assert.equal(formatBNB(700000000000000n),'0.0007');assert.equal(formatBNB(300000000000000n),'0.0003');assert.equal(formatBNB(1n),'0.000000000000000001');});

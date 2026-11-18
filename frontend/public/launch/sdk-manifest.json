@@ -1,0 +1,26 @@
+{
+  "schema": "echo-launch-public-unsigned-sdk/v1",
+  "builtAt": "2026-11-15T13:43:39.494Z",
+  "packageRoot": "agent-sdk",
+  "signing": false,
+  "broadcast": false,
+  "files": {
+    "agent/echo-launch-agent.mjs": "b183464a4a57d869425b784af3d8e0bde2f1beced49d49b00953710fb0a913f2",
+    "artifacts/IV2Factory.json": "eb93f6e854df54fc159fd59fd292d773914dd85f87b518b4e4bd3b2d2b21269d",
+    "artifacts/IV2Pair.json": "a1432fe2ed6f2fea05200ec10a59b8df14b829a968d664db0fbbbd587fff8909",
+    "artifacts/IV2Router.json": "efb142df25e9a0536447bd9c3b35d8d581ba27bd4c8245e1072d3f26c0c39641",
+    "artifacts/IWBNB.json": "b24a8961fd409719ad01548769aa430e92cf1918801a8c65cb21030099afe9ef",
+    "artifacts/LaunchRegistry.json": "0e382283c6f8761e508317505a90bf7d5a88b6002b406329880a7a40c1038716",
+    "artifacts/LaunchToken.json": "91134cf9a1db7c0338bdd4a2dcb3357993c000b74655798bbb2045145c3b07de",
+    "artifacts/NftLaunch.json": "5d16b6eb8f6a5b9ab22a3e320fb3f3d87c36eb3cb0f23d87b51855d1f7dddbcc",
+    "artifacts/NftLaunchFactory.json": "4e8fc45bceadaf7ae200828fb4f4f4fc185bcf87f2815ad19e40eac7619cb639",
+    "artifacts/TokenLaunch.json": "094452f79a72997e35bd4676e0589214f9a77af9a41ae4fe0126ee18e661aedc",
+    "artifacts/TokenLaunchFactory.json": "43c3df267794093aec4338a88133f953c7ff507f2d85457237d4f16a48824df7",
+    "lib/agent-client.mjs": "df460bde5dfffd67f2964668bca94926c099337fcaae42f2a975f9fabaadac09",
+    "package.json": "b006a78e2239c1d716750ad1c471cb3335870ca0e3f633e341226ec831d48b48",
+    "README.md": "214bbd982584cad9cb673b0b09ae1a99dba2b433339d649c1fdad63f2731e70e",
+    "runtime-config.json": "e722753b0f80ca784c239e48e2f3cbbea9644b4a944be9487c2ec116e7c8017b"
+  },
+  "zipSha256": "93a4892c70841154faea4798bd20eeeb5fb5647f051840cf5c8bcdb75e1b686f",
+  "sourceClientSha256": "df460bde5dfffd67f2964668bca94926c099337fcaae42f2a975f9fabaadac09"
+}

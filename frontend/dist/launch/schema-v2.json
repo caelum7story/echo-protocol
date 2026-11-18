@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ECHO Launch local review manifest, not an execution request",
+  "type": "object",
+  "required": ["schema", "id", "scope", "executionReady", "chainId", "template", "rulesVersion", "project", "rules", "economics", "contracts", "readiness", "configDigest"],
+  "properties": {
+    "schema": {"const": "echo-launch-local/v2"},
+    "scope": {"const": "local-draft"},
+    "executionReady": {"const": false},
+    "chainId": {"const": 56},
+    "template": {"enum": ["nft-escrow-v1-preview", "token-fixed-escrow-v1-preview"]},
+    "id": {"type": "string", "minLength": 1, "maxLength": 180},
+    "project": {"type": "object", "required": ["type", "name", "symbol", "price", "startsAt"], "properties": {"type": {"enum": ["nft", "token"]}, "price": {"type": "string", "maxLength": 79, "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,18})?$"}, "minimumRaise": {"type": "string", "maxLength": 79}, "nftSupply": {"type": "string", "maxLength": 16}}},
+    "contracts": {"type": "object", "additionalProperties": {"type": "null"}},
+    "readiness": {"type": "object", "additionalProperties": {"const": false}},
+    "configDigest": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  },
+  "$comment": "The frontend rebuilds trusted rules and execution fields on import. Runtime checks also enforce uint256 monetary range and full-raise bounds; string length alone is insufficient. Fingerprints are local consistency evidence, not author signatures, audits or chain proof. No live contract or signing authorization is supplied."
+}

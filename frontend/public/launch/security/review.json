@@ -1,0 +1,116 @@
+{
+  "schema": "echo-launch-public-local-review/v1",
+  "observedAt": "2026-11-15T16:28:38.454Z",
+  "scannerVersion": "0.11.6",
+  "detectors": 102,
+  "counts": {
+    "High": 4,
+    "Medium": 8,
+    "Low": 29,
+    "Informational": 9
+  },
+  "high": [
+    {
+      "id": "1c16fa2e5963b926c4c901f7594ade02db7cab5c667de42cb88bc1f33be4e338",
+      "check": "arbitrary-send-eth",
+      "description": "LaunchEscrow.withdrawCreditFor(address) (src/LaunchEscrow.sol#134-142) sends eth to arbitrary user\n\tDangerous calls:\n\t- (ok,None) = recipient.call{value: amount}() (src/LaunchEscrow.sol#139)\n",
+      "titleZh": "提款只能支付已记账权益的原收款人",
+      "titleEn": "Credit withdrawals pay only the recorded recipient",
+      "reasonZh": "收款地址是权益账本的键，不能把别人的权益改付调用者；外部转账前清余额，失败整笔回滚，并有重入锁。",
+      "reasonEn": "The recipient is the entitlement-ledger key. A caller cannot redirect another recipient’s credit. Credit is cleared before payment; failure reverts and the reentrancy guard applies.",
+      "boundaryZh": "这是限定场景的开发方本地结论，不能视为误报清除、独立审计或全部外部依赖的安全保证。",
+      "boundaryEn": "This is a scoped developer-local conclusion, not independent clearance, a removed finding or assurance for every external dependency.",
+      "localRegressionPassed": true,
+      "independentClearance": false
+    },
+    {
+      "id": "a3a8dc68d321f007cb8032a40e428900839dae077ffe04c8e3fe6e18a9e1ffc8",
+      "check": "arbitrary-send-eth",
+      "description": "LaunchToken.withdrawTaxFor(address) (src/LaunchToken.sol#176-184) sends eth to arbitrary user\n\tDangerous calls:\n\t- (ok,None) = recipient.call{value: due}() (src/LaunchToken.sol#181)\n",
+      "titleZh": "税款提款同样受权益账本约束",
+      "titleEn": "Tax withdrawals use the same entitlement constraints",
+      "reasonZh": "只提取该收款人已经累计的税款 BNB；拒收与回调不能清掉其他收款人的权益。",
+      "reasonEn": "Only the recipient’s accrued tax BNB can be withdrawn. Rejection and callbacks cannot erase other recipients’ rights.",
+      "boundaryZh": "这是限定场景的开发方本地结论，不能视为误报清除、独立审计或全部外部依赖的安全保证。",
+      "boundaryEn": "This is a scoped developer-local conclusion, not independent clearance, a removed finding or assurance for every external dependency.",
+      "localRegressionPassed": true,
+      "independentClearance": false
+    },
+    {
+      "id": "df457fcf0dd545f5719082cbe0cf2a88b438b7e9e3ab7fde2469787e308476d7",
+      "check": "reentrancy-balance",
+      "description": "Reentrancy in TokenLaunch.finalizePool() (src/TokenLaunch.sol#131-172):\n\tExternal call allowing reentrancy:\n\t- lp = p.mint(LP_DESTINATION) (src/TokenLaunch.sol#157)\n\tBalance read before the call:\n\t- lpBefore = p.balanceOf(LP_DESTINATION) (src/TokenLaunch.sol#156)\n\tPossible stale balance used after the call in a condition:\n\t- lp == 0 || p.balanceOf(LP_DESTINATION) < lpBefore + lp (src/TokenLaunch.sol#158)\n\t\t- stale variable `lpBefore`\n",
+      "titleZh": "LP 前后余额比较需连同固定依赖审查",
+      "titleEn": "LP balance checks require review of fixed dependencies",
+      "reasonZh": "建池有重入锁，使用固定官方工厂的池；LP 余额差用于核对实际不可取回收据。本地精确 DEX 字节码场景通过。",
+      "reasonEn": "Settlement is guarded and uses the fixed official factory pair. The LP balance delta checks the irrevocable receipt. Exact DEX-runtime local cases pass.",
+      "boundaryZh": "这是限定场景的开发方本地结论，不能视为误报清除、独立审计或全部外部依赖的安全保证。",
+      "boundaryEn": "This is a scoped developer-local conclusion, not independent clearance, a removed finding or assurance for every external dependency.",
+      "localRegressionPassed": true,
+      "independentClearance": false
+    },
+    {
+      "id": "1ff04993b58c02aee520510e3f5c9ae483295f99e55bdbdd68a02751f288cfd1",
+      "check": "reentrancy-eth",
+      "description": "Reentrancy in TokenLaunch.finalizePool() (src/TokenLaunch.sol#131-172):\n\tExternal calls:\n\t- IWBNB(wbnb).deposit{value: bnb}() (src/TokenLaunch.sol#154)\n\t- lp = p.mint(LP_DESTINATION) (src/TokenLaunch.sol#157)\n\t- token.burnSaleInventory(burn) (src/TokenLaunch.sol#164)\n\tExternal calls sending eth:\n\t- IWBNB(wbnb).deposit{value: bnb}() (src/TokenLaunch.sol#154)\n\tState variables written after the call(s):\n\t- poolCreated = true (src/TokenLaunch.sol#166)\n\tTokenLaunch.poolCreated (src/TokenLaunch.sol#21) can be used in cross function reentrancies:\n\t- TokenLaunch.poolCreated (src/TokenLaunch.sol#21)\n\t- TokenLaunch.refundEligible() (src/TokenLaunch.sol#83-89)\n",
+      "titleZh": "建池外部调用期间的中间状态",
+      "titleEn": "Intermediate state during external settlement calls",
+      "reasonZh": "settled 在外部调用前设置，资金相关写入共用重入锁；poolCreated 在工作完成后才置真。已跑回调与资金守恒回归。",
+      "reasonEn": "settled is set before external calls, with guarded financial mutations. poolCreated becomes true after completion. Callback and fund-conservation regressions pass.",
+      "boundaryZh": "这是限定场景的开发方本地结论，不能视为误报清除、独立审计或全部外部依赖的安全保证。",
+      "boundaryEn": "This is a scoped developer-local conclusion, not independent clearance, a removed finding or assurance for every external dependency.",
+      "localRegressionPassed": true,
+      "independentClearance": false
+    }
+  ],
+  "compiler": "0.8.38+commit.1835d247.Emscripten.clang",
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "shanghai",
+    "outputSelection": {
+      "*": {
+        "": [
+          "ast"
+        ],
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "userdoc",
+          "devdoc"
+        ]
+      }
+    }
+  },
+  "productionArtifactsMatched": 15,
+  "contractSourceHashes": {
+    "src/DexInterfaces.sol": "56ee8d12a0427d17a1a43a005345714c67a687bba42d93427384e9404c2562af",
+    "src/LaunchEscrow.sol": "7469fec4094295b35807e2940e7559d83ae3b43046fb3c3a30054cb953638b91",
+    "src/LaunchRegistry.sol": "9a4ef80adbdce42d48b61bea9972b657aa0b809e0e185613f8941542f8dc5003",
+    "src/LaunchToken.sol": "71d71d8382c539491d84b1aaad5e43243f1eb657007ebf8333bd7d5b641eb2ea",
+    "src/NftLaunch.sol": "bcc0272a664e584dac3411c214a0d43632a642ce4961b5b1073f29d47f61b89d",
+    "src/NftLaunchFactory.sol": "deca6c3712ca24f2de719468c874f926594c32c6c523bff4d26ea184a9fcf865",
+    "src/TokenLaunch.sol": "b8bb165029647d5fda98ac01d76132d1c3a31b7fd0f2920574b0f26c0de7f203",
+    "src/TokenLaunchFactory.sol": "7da3ed4fed8506a5d2ee61a22dd1378e238b6dda11d45212f65ba1e6970f060b"
+  },
+  "rawSha256": "1610d07af372c2bbf677d55e3679fc5e5c5aed884cea307cda39214d4c8f8445",
+  "independentAudit": false,
+  "productionContractChanged": false,
+  "scannerExitCode": -1,
+  "regressions": {
+    "passed": 32,
+    "scope": "6 recipient/callback + 8 exact deployed DEX-runtime + 12 stateful fund + 6 lifecycle boundary cases; local EVM, synthetic balances/identities; no public chain transactions",
+    "initialIsolatedHarnessFailures": "Retained; missing historical frontend/content paths were corrected only in the isolated test fixture before the 6 lifecycle cases passed.",
+    "mainTapSha256": "2c8b698b380a34fde5d47262d05d9b3d3a0630e3266856660d52edc99e02997e",
+    "lifecycleTapSha256": "68c570bde6028b19ceb8d5367105312ae914cc6f3dbc5b878ac2699ba61b89fb"
+  },
+  "remaining": [
+    "Independent security review",
+    "Real public testnet full lifecycle",
+    "Long-term oracle/manipulation and complete dependency assumptions"
+  ],
+  "reproduce": "Pinned solc0.8.38 optimizer200 Shanghai -> scripts/export-static-analysis.mjs new-directory -> Slither0.11.6 export --exclude-dependencies --filter-paths test/mocks; retain all findings and nonzero finding exit status."
+}

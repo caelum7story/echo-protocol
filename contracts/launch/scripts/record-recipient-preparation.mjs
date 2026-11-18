@@ -1,0 +1,15 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const root=path.resolve(import.meta.dirname,'..'),read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8')),previous=read('evidence/active-work.json'),p=read('evidence/preparation-progress.json');
+if(!p.recipientIsolation?.locallyVerified||!p.statefulAccounting.locallyVerified||!p.roundingPolicy.comparisonVerified||!p.localTests.currentInputsMatch||p.localTests.failed!==0||!p.frontendHandoff.currentInputsMatch||p.frontendHandoff.failed!==0||!p.historicalDexFork.verified||!p.indexBackup.locallyVerified)throw Error('CURRENT_RECIPIENT_PREPARATION_REQUIRED');
+const state={...previous,observedAt:new Date().toISOString(),goalStatus:'active',classification:'progress',previousGoalTurnClassification:'progress',liveTestSession:null,
+ currentStage:`6bounded recipient/surplus cases locally verified with${p.recipientIsolation.successfulLocalReceipts}successful and${p.recipientIsolation.failedLocalReceipts}failed actual receipts.4forced native transfers do not change principal or income. Candidate contracts/economic rules unchanged;production gates remain.`,recipientIsolation:p.recipientIsolation,
+ completedThisTurn:[
+  'Compiled adversarial callbacks/forced-native actors separately;verified existing compiler source/artifact inputs and preserved all candidate source hashes.',
+  'Verified native rejection,gas grief and propagated failure preserve pull-payment credits;cross-recipient withdrawal/refund/conversion and NFT claim reentry hit the guard.',
+  'Verified second-ID NFT rejection/wrong selector/gas grief rolls back the whole batch while another original wallet can claim independently;later guarded delivery succeeds without duplication.',
+  'Verified callback-free ERC20 delivery/replay,immutable-recipient payouts,forced BNB exclusion from minimum/success80-15-5/refunds/tax-conversion income,and residual surplus isolation.',
+  'Recorded6source-current cases with actual successful deployments/calls,13actual typed failed receipts and4before/after forced transfers;integrated the recipient-isolation gate and operational limitations.'
+ ],nextActions:p.nextActions,productionReady:false,executionReady:false,contractsDeployed:false,audited:false,launchUploaded:false,
+ limitations:'Synthetic actors and mock identity/DEX on local EVM31337 only. Permanently rejecting original recipients can retain uncollectible credits,and forced unrelated native surplus is not recoverable without a prohibited rescue capability. Real smart-wallet/chain behavior,oracle/reserve extremes,NFT admission/storage,rounding decisions,independent review,testnet,funding and production authorization remain open.'};
+fs.writeFileSync(path.join(root,'evidence/active-work.json'),JSON.stringify(state,null,2)+'\n');console.log(JSON.stringify({recorded:true,goalStatus:'active',testsPassed:state.recipientIsolation.testsPassed,successfulLocalReceipts:state.recipientIsolation.successfulLocalReceipts,failedLocalReceipts:state.recipientIsolation.failedLocalReceipts,forcedNativeTransfers:state.recipientIsolation.forcedNativeTransfers,productionReady:false}));

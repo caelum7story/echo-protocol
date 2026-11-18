@@ -1,0 +1,9 @@
+{
+  "schema": "echo-agentic-queue/v1",
+  "enabled": true,
+  "operatorPublicKey": "7fb9a1d4f12a1437a85275f6ed4643780de131b4e03ebdcad9444c493b346675",
+  "sessionMs": 1800000,
+  "maxSessions": 4,
+  "chainId": 56,
+  "scope": "ECHO Genesis Mint only"
+}

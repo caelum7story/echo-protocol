@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+import {spawn} from 'node:child_process';
+const root=path.resolve(import.meta.dirname,'..'),hash=f=>createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex');
+const files=['scripts/accounting-evidence.mjs','scripts/test-accounting-evidence.mjs','test/accounting-evidence.test.mjs','rules/user-decisions-20261115.json','evidence/stateful-funds-test-result.json','evidence/stateful-funds-walkthrough.json','evidence/stateful-funds-tests.tap','evidence/rounding-policy-comparison.json'];
+const inputHashes=Object.fromEntries(files.map(f=>[f,hash(f)]));
+const child=spawn(process.execPath,['--test','--test-concurrency=1','--test-reporter=tap','test/accounting-evidence.test.mjs'],{cwd:root,stdio:['ignore','pipe','pipe']});let output='';for(const stream of [child.stdout,child.stderr])stream.on('data',data=>{output+=data;process.stdout.write(data);});
+const exitCode=await new Promise(resolve=>child.on('exit',resolve)),changed=files.filter(f=>hash(f)!==inputHashes[f]);
+const result={at:new Date().toISOString(),exitCode,passed:Number(output.match(/# pass (\d+)/)?.[1]??0),failed:Number(output.match(/# fail (\d+)/)?.[1]??0),inputHashes,unchangedInputs:changed.length===0,changed,localOnly:true,remoteWrites:false,realWalletUsed:false};
+fs.writeFileSync(path.join(root,'evidence/accounting-evidence-checks.tap'),output);fs.writeFileSync(path.join(root,'evidence/accounting-evidence-checks.json'),JSON.stringify(result,null,2)+'\n');if(exitCode!==0||changed.length)process.exitCode=1;

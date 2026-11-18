@@ -1,0 +1,87 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {BrowserProvider,Contract,ContractFactory,ZeroAddress,keccak256,toUtf8Bytes} from 'ethers';
+import {createLocalChain} from './local-chain.mjs';
+const root=path.resolve(import.meta.dirname,'..'),read=f=>JSON.parse(fs.readFileSync(path.join(root,f),'utf8')),capture=read('references/pancake-v2/deployed-runtime.json'),artifact=n=>read('artifacts/'+n+'.json');
+const E18=10n**18n,Q112=1n<<112n,PRICE=10000000000n,UNITS=1000000n,WINDOW=1800,AGE=7200,DAY=86400,observations=[];let requestSequence=0;
+const request=()=>keccak256(toUtf8Bytes('LOCAL-ORACLE-BOUNDARY-'+(++requestSequence)));
+async function using(fn,{launchAt=null,taxedTransfer=10000n*E18,priceWei=PRICE}={}){
+ assert.equal(capture.chainId,56);assert.equal(capture.readOnly,true);for(const c of Object.values(capture.codes))assert.equal(keccak256(c.code),c.runtimeHash);
+ const chain=await createLocalChain({runtimeCodes:['factory','router','wbnb'].map(role=>capture.codes[role])}),provider=new BrowserProvider(chain.provider,undefined,{cacheTimeout:-1});provider.pollingInterval=10;
+ const signers=await Promise.all([0,1,2,3,4].map(i=>provider.getSigner(i))),addresses=await Promise.all(signers.map(s=>s.getAddress())),receipts=[],failed=[];
+ const tx=async promise=>{const r=await(await promise).wait();assert.equal(r.status,1);const block=await chain.provider.request({method:'eth_getBlockByHash',params:[r.blockHash,false]});receipts.push({hash:r.hash,status:r.status,blockNumber:r.blockNumber,blockHash:r.blockHash,timestamp:Number(BigInt(block.timestamp)),gasUsed:String(r.gasUsed)});return r;};
+ const deploy=async(name,args=[])=>{const a=artifact(name),c=await new ContractFactory(a.abi,a.bytecode,signers[0]).deploy(...args,{gasLimit:20000000});await c.waitForDeployment();await tx(Promise.resolve(c.deploymentTransaction()));return c;};
+ const now=async()=>Number((await chain.provider.request({method:'eth_getBlockByNumber',params:['latest',false]})).timestamp),pinNext=async timestamp=>chain.provider.request({method:'evm_setNextBlockTimestamp',params:[timestamp]}),timeTo=async timestamp=>{await pinNext(timestamp);await chain.provider.request({method:'evm_mine',params:[]});assert.equal(await now(),timestamp);await pinNext(timestamp);};
+ const router=new Contract(capture.codes.router.address,[...artifact('IV2Router').abi,'function swapExactETHForTokensSupportingFeeOnTransferTokens(uint256,address[],address,uint256) payable'],signers[0]),wbnb=new Contract(capture.codes.wbnb.address,artifact('IWBNB').abi,signers[0]);
+ const factory=new Contract(capture.codes.factory.address,['function allPairsLength() view returns(uint256)','function feeTo() view returns(address)'],signers[0]);assert.equal(await factory.allPairsLength(),0n);assert.equal(await factory.feeTo(),ZeroAddress);
+ const identity=await deploy('MockIdentity');await tx(identity.setOwner(2,addresses[2]));const start=launchAt===null?await now()+100:launchAt-7*DAY,end=start+7*DAY;
+ const base=[identity.target,addresses[0],addresses[0],addresses[1],start,priceWei,555555555n,request()],sale=await deploy('TokenLaunch',[base,UNITS*priceWei,'Local oracle boundary','ORACLE',factory.target,router.target,wbnb.target,WINDOW,AGE]);
+ const token=new Contract(await sale.token(),artifact('LaunchToken').abi,signers[0]),pair=new Contract(await token.pair(),[...artifact('IV2Pair').abi,'function sync()'],signers[0]);assert.equal(keccak256(await provider.getCode(pair.target)),capture.codes.pair.runtimeHash);
+ await timeTo(start);await tx(sale.connect(signers[2]).subscribe(2,UNITS,request(),await now()+300,{value:UNITS*priceWei,gasLimit:600000}));await timeTo(end);await tx(sale.finalizePool({gasLimit:5000000}));await tx(sale.connect(signers[2]).claim(2));
+ await tx(token.connect(signers[2]).transfer(pair.target,taxedTransfer));await tx(pair.sync({gasLimit:250000}));
+ const snapshot=async()=>({collectedTax:String(await token.collectedTax()),heldTokens:String(await token.balanceOf(token.target)),allowance:String(await token.allowance(token.target,router.target)),totalCredit:String(await token.totalTaxBnbCredit()),creatorCredit:String(await token.taxBnbCredit(addresses[1])),platformCredit:String(await token.taxBnbCredit(addresses[0])),nativeBalance:String(await provider.getBalance(token.target))});
+ async function fails(method,args,error){
+  const before=await snapshot(),expectedTimestamp=await now();await pinNext(expectedTimestamp);let caught;try{await tx(method(...args,{gasLimit:2000000}));}catch(e){caught=e;}assert.ok(caught,'Expected a mined failed local transaction');const raw=caught.error??caught.info?.error,data=typeof caught.data==='string'?caught.data:typeof raw?.data==='string'?raw.data:raw?.data?.data,hash=caught.receipt?.hash??raw?.data?.transactionHash;
+  assert.match(hash??'',/^0x[0-9a-fA-F]{64}$/);const receipt=await chain.provider.request({method:'eth_getTransactionReceipt',params:[hash]}),block=await chain.provider.request({method:'eth_getBlockByHash',params:[receipt.blockHash,false]}),timestamp=Number(BigInt(block.timestamp));assert.equal(receipt.status,'0x0');assert.equal(timestamp,expectedTimestamp);const decoded=token.interface.parseError(data);assert.equal(decoded.name,error);assert.deepEqual(await snapshot(),before,'A rejected operation must preserve tax funds and allowances');failed.push({hash,status:receipt.status,error,blockNumber:Number(BigInt(receipt.blockNumber)),blockHash:receipt.blockHash,timestamp,expectedTimestamp,fundsUnchanged:true});
+ }
+ const warm=async()=>{await timeTo(end+WINDOW);await tx(token.connect(signers[4]).updateOracle({gasLimit:250000}));assert.ok(await token.averagePriceX112()>0n);};
+ const reserves=async()=>{const r=await pair.getReserves(),first=(await pair.token0())===token.target;return {token:first?r[0]:r[1],wbnb:first?r[1]:r[0]};};
+ try{await fn({chain,provider,signers,addresses,tx,now,timeTo,pinNext,router,wbnb,sale,token,pair,start,end,snapshot,fails,warm,reserves,receipts,failed});}finally{provider.destroy();await chain.close();}
+}
+const finish=(f,caseId,details)=>observations.push({caseId,...details,receipts:f.receipts,failedReceipts:f.failed,pairRuntimeHash:capture.codes.pair.runtimeHash,feeTo:ZeroAddress});
+
+test('exact-runtime oracle enforces window and age boundaries then resets and rewarms after a long gap',{timeout:120000},()=>using(async f=>{
+ const amount=100n*E18;await f.fails(f.token.convertTax,[amount,await f.now()+300],'PriceUnavailable');await f.timeTo(f.end+WINDOW-1);await f.fails(f.token.updateOracle,[],'PriceUnavailable');assert.equal(await f.token.averageUpdatedAt(),0n);
+ await f.timeTo(f.end+WINDOW);await f.tx(f.token.connect(f.signers[4]).updateOracle({gasLimit:250000}));const updated=Number(await f.token.averageUpdatedAt());assert.equal(updated,f.end+WINDOW);const minimum=await f.token.conversionQuote(amount);assert.ok(minimum>0n);await f.fails(f.token.updateOracle,[],'PriceUnavailable');
+ await f.timeTo(updated+AGE);assert.equal(await f.token.conversionQuote(amount),minimum);await f.timeTo(updated+AGE+1);await f.fails(f.token.convertTax,[amount,await f.now()+300],'PriceUnavailable');await f.tx(f.token.updateOracle({gasLimit:250000}));assert.equal(await f.token.averagePriceX112(),0n);assert.equal(await f.token.averageUpdatedAt(),0n);await f.fails(f.token.convertTax,[amount,await f.now()+300],'PriceUnavailable');
+ const reset=await f.now();await f.timeTo(reset+WINDOW-1);await f.fails(f.token.updateOracle,[],'PriceUnavailable');await f.timeTo(reset+WINDOW);await f.tx(f.token.updateOracle({gasLimit:250000}));const stable=await f.reserves(),expectedAverage=(stable.wbnb<<112n)/stable.token;assert.equal(await f.token.averagePriceX112(),expectedAverage);const expectedRewarmedMinimum=(amount*expectedAverage*9700n+Q112*10000n-1n)/(Q112*10000n);assert.equal(await f.token.conversionQuote(amount),expectedRewarmedMinimum);
+ finish(f,'window-age-and-reset',{windowSeconds:WINDOW,maxAgeSeconds:AGE,windowMinusOneRejected:true,windowExactAccepted:true,ageExactAccepted:true,agePlusOneRejected:true,longGapReset:true,fullWindowRewarm:true,permissionlessUpdater:true,finalTaxState:await f.snapshot()});
+}));
+
+test('exact-runtime conversion bounds amount deadlines and unrelated tokens while honoring1%and3%integer protection',{timeout:120000},()=>using(async f=>{
+ await f.warm();const r=await f.reserves(),cap=r.token/100n,tax=await f.token.collectedTax();assert.ok(tax>cap);assert.equal(await f.token.MAX_SWAP_RESERVE_BPS(),100n);assert.equal(await f.token.MAX_SHORTFALL_BPS(),300n);
+ await f.tx(f.token.connect(f.signers[2]).transfer(f.token.target,E18));assert.equal(await f.token.collectedTax(),tax);assert.equal(await f.token.balanceOf(f.token.target),tax+E18);
+ for(const amount of [0n,cap+1n])await f.fails(f.token.convertTax,[amount,await f.now()+300],'InvalidAmount');
+ await f.fails(f.token.convertTax,[cap,await f.now()-1],'InvalidAmount');await f.fails(f.token.convertTax,[cap,await f.now()+901],'InvalidAmount');
+ const average=await f.token.averagePriceX112(),reference=cap*average/Q112,minimum=(cap*average*9700n+Q112*10000n-1n)/(Q112*10000n);assert.equal(await f.token.conversionQuote(cap),minimum);assert.ok(minimum>0n);
+ const before=await f.snapshot(),convertAt=await f.now();await f.pinNext(convertAt);const receipt=await f.tx(f.token.convertTax(cap,convertAt+900,{gasLimit:2000000})),event=receipt.logs.map(l=>{try{return f.token.interface.parseLog(l);}catch{return null;}}).find(l=>l?.name==='TaxConverted');assert.equal(f.receipts.at(-1).timestamp,convertAt);assert.ok(event);assert.equal(event.args.tokens,cap);assert.equal(event.args.minOut,minimum);assert.ok(event.args.bnb>=minimum);
+ const after=await f.snapshot();assert.equal(BigInt(after.collectedTax),BigInt(before.collectedTax)-cap);assert.equal(BigInt(after.heldTokens),BigInt(after.collectedTax)+E18);assert.equal(after.allowance,'0');assert.equal(BigInt(after.totalCredit)-BigInt(before.totalCredit),event.args.bnb);assert.equal(BigInt(after.nativeBalance)-BigInt(before.nativeBalance),event.args.bnb);
+ const remaining=await f.token.collectedTax();assert.ok(remaining+1n<(await f.reserves()).token/100n);await f.fails(f.token.convertTax,[remaining+1n,await f.now()+300],'InvalidAmount');
+ finish(f,'amount-deadline-and-token-surplus',{onePercentCapWei:String(cap),averagePriceX112:String(average),collectedBeforeWei:String(tax),capPlusOneRejected:true,collectedPlusOneRejected:true,zeroRejected:true,expiredRejected:true,ttl901Rejected:true,ttl900Accepted:true,unrelatedTokenDonationWei:String(E18),unrelatedTokensExcluded:true,referenceBnbWei:String(reference),minimumBnbWei:String(minimum),actualBnbWei:String(event.args.bnb),allowanceCleared:true});
+},{taxedTransfer:900000n*E18}));
+
+for(const direction of ['up','down'])test('exact-runtime abrupt '+direction+' reserve move rejects stale conversion intent while trading remains available',{timeout:120000},()=>using(async f=>{
+ await f.warm();const amount=100n*E18,oldMinimum=await f.token.conversionQuote(amount),beforeReserves=await f.reserves();
+ if(direction==='up'){await f.tx(f.wbnb.deposit({value:beforeReserves.wbnb}));await f.tx(f.wbnb.transfer(f.pair.target,beforeReserves.wbnb));}
+ else await f.tx(f.token.connect(f.signers[2]).transfer(f.pair.target,500000n*E18));
+ await f.tx(f.pair.sync({gasLimit:250000}));const moved=await f.reserves();assert.notEqual(moved.wbnb*beforeReserves.token,moved.token*beforeReserves.wbnb);await f.fails(f.token.convertTax,[amount,await f.now()+300],'PriceProtection');
+ await f.tx(f.token.connect(f.signers[2]).transfer(f.addresses[3],E18));assert.equal(await f.token.balanceOf(f.addresses[3]),E18);
+ const buy=10n**12n,path=[f.wbnb.target,f.token.target],expected=(await f.router.getAmountsOut(buy,path))[1];await f.tx(f.router.connect(f.signers[4]).swapExactETHForTokensSupportingFeeOnTransferTokens(expected,path,f.addresses[4],await f.now()+300,{value:buy,gasLimit:1500000}));assert.equal(await f.token.balanceOf(f.addresses[4]),expected);
+ const sell=100n*E18,fee=sell*2n/100n,expectedSell=(await f.router.getAmountsOut(sell-fee,[f.token.target,f.wbnb.target]))[1],nativeBefore=await f.provider.getBalance(f.addresses[3]),taxBefore=await f.token.collectedTax();await f.tx(f.token.connect(f.signers[2]).approve(f.router.target,sell));await f.tx(f.router.connect(f.signers[2]).swapExactTokensForETHSupportingFeeOnTransferTokens(sell,expectedSell,[f.token.target,f.wbnb.target],f.addresses[3],await f.now()+300,{gasLimit:1500000}));assert.equal(await f.provider.getBalance(f.addresses[3])-nativeBefore,expectedSell);assert.equal(await f.token.collectedTax()-taxBefore,fee);
+ await f.fails(f.token.convertTax,[amount,await f.now()+300],'PriceProtection');const maintainedFrom=await f.now();await f.timeTo(maintainedFrom+WINDOW);await f.tx(f.token.updateOracle({gasLimit:250000}));const newMinimum=await f.token.conversionQuote(amount);assert.ok(newMinimum>0n);assert.notEqual(newMinimum,oldMinimum);
+ finish(f,'abrupt-'+direction+'-move',{oldMinimumBnbWei:String(oldMinimum),newMinimumBnbWei:String(newMinimum),staleIntentRejected:true,ordinaryTransferWorks:true,actualRouterBuyWorks:true,actualRouterSellWorks:true,buyTaxZero:true,sellTaxTwoPercent:true,fullWindowChangedPriceAccepted:true,sustainedManipulationExcludedFromGuarantee:true});
+}));
+
+test('exact deployed pair and candidate oracle both handle one legitimate uint32 timestamp wrap',{timeout:120000},()=>using(async f=>{
+ const edge=2**32,initial=await f.token.observationTimestamp();assert.equal(initial,BigInt(edge-WINDOW));await f.timeTo(edge-1);await f.fails(f.token.updateOracle,[],'PriceUnavailable');await f.timeTo(edge);await f.tx(f.token.updateOracle({gasLimit:250000}));assert.equal(await f.token.observationTimestamp(),0n);assert.equal(await f.token.averageUpdatedAt(),BigInt(edge));const minimum=await f.token.conversionQuote(100n*E18);assert.ok(minimum>0n);
+ await f.timeTo(edge+WINDOW);await f.tx(f.token.updateOracle({gasLimit:250000}));assert.equal(await f.token.observationTimestamp(),BigInt(WINDOW));const stable=await f.reserves(),expectedAverage=(stable.wbnb<<112n)/stable.token;assert.equal(await f.token.averagePriceX112(),expectedAverage);assert.equal(await f.token.conversionQuote(100n*E18),(100n*E18*expectedAverage*9700n+Q112*10000n-1n)/(Q112*10000n));
+ finish(f,'uint32-single-wrap',{initialTimestamp:String(initial),wrappedObservation:'0',absoluteUpdatedAt:String(edge),secondObservation:String(WINDOW),minimumBnbWei:String(minimum),singleWrapHandled:true,multipleWrapIdleNotVerified:true});
+},{launchAt:2**32-WINDOW}));
+
+test('exact-runtime strict rational ceiling rejects the former95wei payout against a98wei reference',{timeout:120000},()=>using(async f=>{
+ await f.warm();const amount=100n*E18,average=await f.token.averagePriceX112(),reference=amount*average/Q112,exactNumerator=amount*average*9700n,denominator=Q112*10000n,strictMinimum=(exactNumerator+denominator-1n)/denominator;
+ let acceptedRationalQuotes=0,protectedSmallQuotes=0;const samples=[1n,...Array.from({length:100},(_,i)=>BigInt(i+1)*2n*E18-BigInt(i%13))];
+ for(const sample of samples){
+  const expected=(sample*average*9700n+denominator-1n)/denominator,integerReference=sample*average/Q112,upper=integerReference*10300n/10000n,quoted=(await f.router.getAmountsOut(sample,[f.token.target,f.wbnb.target]))[1];
+  if(quoted<expected||quoted>upper){let caught;try{await f.token.conversionQuote(sample);}catch(e){caught=e;}assert.ok(caught);const raw=caught.error??caught.info?.error,data=typeof caught.data==='string'?caught.data:typeof raw?.data==='string'?raw.data:raw?.data?.data;assert.ok(data,JSON.stringify({sample:String(sample),keys:Object.keys(caught),info:caught.info,raw}));assert.equal(f.token.interface.parseError(data)?.name,'PriceProtection');protectedSmallQuotes++;}
+  else{assert.equal(await f.token.conversionQuote(sample),expected);acceptedRationalQuotes++;}
+ }
+ assert.ok(acceptedRationalQuotes>0&&protectedSmallQuotes>0);
+ const candidateMinimum=await f.token.conversionQuote(amount);await f.tx(f.token.connect(f.signers[2]).transfer(f.pair.target,25000n*E18));await f.tx(f.pair.sync({gasLimit:250000}));const routerQuote=(await f.router.getAmountsOut(amount,[f.token.target,f.wbnb.target]))[1];assert.equal(reference,98n);assert.equal(strictMinimum,96n);assert.equal(candidateMinimum,strictMinimum);assert.equal(routerQuote,95n);
+ await f.fails(f.token.convertTax,[amount,await f.now()+300],'PriceProtection');assert.equal(await f.token.totalTaxBnbCredit(),0n);
+ finish(f,'strict-shortfall-rounding-gap',{baselineGapReproducedSeparately:true,repairVerified:true,integerReferenceBnbWei:String(reference),strictRationalMinimumBnbWei:String(strictMinimum),candidateMinimumBnbWei:String(candidateMinimum),rejectedRouterQuoteBnbWei:String(routerQuote),formerOverThreePercentPayoutRejected:true,noBnbPaid:true,rationalQuoteSamples:samples.length,acceptedRationalQuotes,protectedSmallQuotes});
+},{priceWei:1n}));
+
+test.after(()=>fs.writeFileSync(path.join(root,'evidence/oracle-boundaries-walkthrough.json'),JSON.stringify({at:new Date().toISOString(),environment:'isolated-EVM31337;exact-captured-DEX-runtime;fresh-empty-storage;mock-identity',sourceCaptureBlock:capture.blockNumber,sourceCaptureBlockHash:capture.blockHash,observations,remoteWrites:false,realWalletUsed:false,historicalStateFork:false,independentSecurityReview:false,livePriceVerified:false},null,2)+'\n'));

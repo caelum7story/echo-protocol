@@ -1,0 +1,25 @@
+{
+  "name": "echo-launch-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "compile": "node scripts/compile.mjs",
+    "test": "node --test --test-concurrency=1 test/*.test.mjs",
+    "prepare:deployment": "node scripts/prepare-deployment.mjs",
+    "verify:deployment": "node scripts/verify-deployment.mjs",
+    "keeper": "node scripts/keeper.mjs",
+    "pretest": "node scripts/compile.mjs",
+    "test:fork": "node scripts/test-mainnet-fork.mjs"
+  },
+  "devDependencies": {
+    "@openzeppelin/contracts": "5.4.0",
+    "ethers": "6.17.0",
+    "ganache": "7.9.2",
+    "hardhat": "3.21.1",
+    "solc": "0.8.24"
+  },
+  "engines": {
+    "node": ">=22 <25"
+  }
+}

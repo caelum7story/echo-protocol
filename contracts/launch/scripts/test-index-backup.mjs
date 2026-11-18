@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {spawn} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {compile,root} from './compile.mjs';
+const compiled=compile(),hash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+const files=['scripts/index-backup.mjs','scripts/test-index-backup.mjs','scripts/compile.mjs','test/index-backup.test.mjs','test/local-chain.mjs','package-lock.json',...fs.readdirSync(path.join(root,'lib')).filter(f=>f.endsWith('.mjs')).map(f=>'lib/'+f),...fs.readdirSync(path.join(root,'artifacts')).filter(f=>f.endsWith('.json')).map(f=>'artifacts/'+f)];
+const inputHashes={...Object.fromEntries(Object.entries(compiled.sourceHashes).map(([f,d])=>[f.startsWith('@')?'node_modules/'+f:f,d])),...Object.fromEntries(files.map(f=>[f,hash(path.join(root,f))]))};
+const externalFiles=[path.resolve(root,'../../work/echo-launch-preview-20261113/nft-content-20261114/reference.json'),path.resolve(root,'../../frontend/dist/assets/echo-sculpture-v4.webp')],externalHashes=Object.fromEntries(externalFiles.map(f=>[f,hash(f)]));
+const child=spawn(process.execPath,['--test','--test-concurrency=1','--test-reporter=tap','test/index-backup.test.mjs'],{cwd:root,stdio:['ignore','pipe','pipe']});let output='';
+for(const stream of [child.stdout,child.stderr])stream.on('data',data=>{output+=data;process.stdout.write(data);});const exitCode=await new Promise(resolve=>child.on('exit',resolve));
+const changed=[...Object.entries(inputHashes).filter(([f,d])=>hash(path.join(root,f))!==d).map(([f])=>f),...Object.entries(externalHashes).filter(([f,d])=>hash(f)!==d).map(([f])=>f)];
+const result={at:new Date().toISOString(),exitCode,passed:Number(output.match(/# pass (\d+)/)?.[1]??0),failed:Number(output.match(/# fail (\d+)/)?.[1]??0),inputHashes,externalHashes,unchangedInputs:changed.length===0,changed,localOnly:true,realWalletUsed:false,remoteWrites:false};
+fs.writeFileSync(path.join(root,'evidence/index-backup-tests.tap'),output);fs.writeFileSync(path.join(root,'evidence/index-backup-test-result.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({exitCode,passed:result.passed,failed:result.failed,unchangedInputs:result.unchangedInputs}));if(exitCode!==0||changed.length)process.exitCode=1;

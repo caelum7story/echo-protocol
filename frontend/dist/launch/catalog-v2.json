@@ -1,0 +1,718 @@
+{
+  "schema": "echo-launch-catalog/v2",
+  "illustrative": true,
+  "executionReady": false,
+  "rulesVersion": "echo-launch-business-20261114.2",
+  "examples": [
+    {
+      "schema": "echo-launch-local/v2",
+      "id": "example-aurum",
+      "scope": "local-draft",
+      "executionReady": false,
+      "chainId": 56,
+      "template": "nft-escrow-v1-preview",
+      "rulesVersion": "echo-launch-business-20261114.2",
+      "project": {
+        "type": "nft",
+        "name": "Aurum Editions",
+        "symbol": "AURM",
+        "tagline": "以十二件金色作品，体验一次完整的 NFT 发行。",
+        "description": "此项目仅供本地交互演示。NFT 图像、编号、认购、失败退款与成功领取均为示例，不对应真实资产或项目。",
+        "category": "art",
+        "cover": "./covers/aurum-studio.svg",
+        "website": "",
+        "x": "",
+        "creatorRecipient": "",
+        "nftSupply": "12",
+        "price": "0.005",
+        "minimumRaise": "1",
+        "startsAt": "2026-11-12T19:33:03.245Z"
+      },
+      "rules": {
+        "version": "echo-launch-business-20261114.2",
+        "chainId": 56,
+        "durationSeconds": 604800,
+        "tokenTotal": "1000000000",
+        "tokenPublic": "555555555",
+        "tokenLiquidityReserve": "444444444",
+        "tokenUnallocated": "1",
+        "tokenIdentityPercent": 4,
+        "tokenIdentityCap": "22222222",
+        "tokenDecimalsPreview": 18,
+        "subscriptionUnit": "whole-token",
+        "earlyExitBps": 500,
+        "earlyExitBufferSeconds": 900,
+        "poolGraceSeconds": 172800,
+        "pauseLimitSeconds": 86400,
+        "tokenSplit": {
+          "liquidity": 80,
+          "creator": 15,
+          "platform": 5
+        },
+        "nftSplit": {
+          "creator": 90,
+          "platform": 10
+        },
+        "tax": {
+          "buy": 0,
+          "sell": 2,
+          "transfer": 0
+        },
+        "executionReady": false,
+        "precisionStatus": "Local preview uses whole-token subscriptions and 18 token decimals. Final contract precision and BNB dust handling remain subject to review.",
+        "template": "nft-escrow-v1-preview"
+      },
+      "startsAt": "2026-11-12T19:33:03.245Z",
+      "endsAt": "2026-11-19T19:33:03.245Z",
+      "economics": {
+        "priceWei": "5000000000000000",
+        "publicUnits": "12",
+        "maxRaiseWei": "60000000000000000",
+        "minimumWei": "60000000000000000",
+        "soldUnits": "0",
+        "raisedWei": "0",
+        "remaining": "12",
+        "identityCap": null,
+        "totalSupply": "12",
+        "liquidityWei": "0",
+        "creatorWei": "0",
+        "platformWei": "0",
+        "roundingWei": "0",
+        "poolTokenBase": "0",
+        "burnTokenBase": "0",
+        "progressBps": 0,
+        "minimumReached": false,
+        "lowMinimumWarning": false,
+        "precisionStatus": "Local preview uses whole-token subscriptions and 18 token decimals. Final contract precision and BNB dust handling remain subject to review."
+      },
+      "metadata": [
+        {
+          "tokenId": 1,
+          "name": "Aurum Editions #1",
+          "image": "./covers/aurum-studio.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "tokenId": 2,
+          "name": "Aurum Editions #2",
+          "image": "./covers/aurum-studio.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "tokenId": 3,
+          "name": "Aurum Editions #3",
+          "image": "./covers/aurum-studio.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "tokenId": 4,
+          "name": "Aurum Editions #4",
+          "image": "./covers/aurum-studio.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "tokenId": 5,
+          "name": "Aurum Editions #5",
+          "image": "./covers/aurum-studio.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 5
+            }
+          ]
+        },
+        {
+          "tokenId": 6,
+          "name": "Aurum Editions #6",
+          "image": "./covers/aurum-studio.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 6
+            }
+          ]
+        },
+        {
+          "tokenId": 7,
+          "name": "Aurum Editions #7",
+          "image": "./covers/aurum-studio.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 7
+            }
+          ]
+        },
+        {
+          "tokenId": 8,
+          "name": "Aurum Editions #8",
+          "image": "./covers/aurum-studio.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 8
+            }
+          ]
+        },
+        {
+          "tokenId": 9,
+          "name": "Aurum Editions #9",
+          "image": "./covers/aurum-studio.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 9
+            }
+          ]
+        },
+        {
+          "tokenId": 10,
+          "name": "Aurum Editions #10",
+          "image": "./covers/aurum-studio.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 10
+            }
+          ]
+        },
+        {
+          "tokenId": 11,
+          "name": "Aurum Editions #11",
+          "image": "./covers/aurum-studio.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 11
+            }
+          ]
+        },
+        {
+          "tokenId": 12,
+          "name": "Aurum Editions #12",
+          "image": "./covers/aurum-studio.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 12
+            }
+          ]
+        }
+      ],
+      "metadataDigest": "a57882a9495b2bca1c922c40994e2a48f584c6af211c090ee6146c6d89c8b5c8",
+      "contentPersistenceVerified": false,
+      "templateSecurityReview": "not-performed",
+      "contracts": {
+        "factory": null,
+        "launch": null,
+        "asset": null,
+        "identity": null,
+        "router": null,
+        "factoryDex": null,
+        "wbnb": null,
+        "pair": null
+      },
+      "readiness": {
+        "walletOwnershipVerified": false,
+        "contractsDeployed": false,
+        "gasEstimated": false,
+        "simulationPassed": false
+      },
+      "warning": "LOCAL FRONTEND REVIEW ONLY. No live issuance, wallet login, signing, spending approval, mint or transfer. Do not reuse the existing ECHO Mint contract.",
+      "configDigest": "eb106291baa471722d56b1ffc0ff3c18e01a80d768b2cc068b96f8abb2ae8390",
+      "illustrative": true
+    },
+    {
+      "schema": "echo-launch-local/v2",
+      "id": "example-orbit",
+      "scope": "local-draft",
+      "executionReady": false,
+      "chainId": 56,
+      "template": "token-fixed-escrow-v1-preview",
+      "rulesVersion": "echo-launch-business-20261114.2",
+      "project": {
+        "type": "token",
+        "name": "Orbit Tools",
+        "symbol": "ORBT",
+        "tagline": "从固定价认购，到建池、派发与交易规则。",
+        "description": "此项目仅供本地交互演示。展示固定价格托管认购、最低募集额、建池、派发和卖出税规则，不对应真实资产或交易。",
+        "category": "tools",
+        "cover": "./covers/orbit-observatory.svg",
+        "website": "",
+        "x": "",
+        "creatorRecipient": "",
+        "nftSupply": "12",
+        "price": "0.00000001",
+        "minimumRaise": "1",
+        "startsAt": "2026-11-12T19:33:03.264Z"
+      },
+      "rules": {
+        "version": "echo-launch-business-20261114.2",
+        "chainId": 56,
+        "durationSeconds": 604800,
+        "tokenTotal": "1000000000",
+        "tokenPublic": "555555555",
+        "tokenLiquidityReserve": "444444444",
+        "tokenUnallocated": "1",
+        "tokenIdentityPercent": 4,
+        "tokenIdentityCap": "22222222",
+        "tokenDecimalsPreview": 18,
+        "subscriptionUnit": "whole-token",
+        "earlyExitBps": 500,
+        "earlyExitBufferSeconds": 900,
+        "poolGraceSeconds": 172800,
+        "pauseLimitSeconds": 86400,
+        "tokenSplit": {
+          "liquidity": 80,
+          "creator": 15,
+          "platform": 5
+        },
+        "nftSplit": {
+          "creator": 90,
+          "platform": 10
+        },
+        "tax": {
+          "buy": 0,
+          "sell": 2,
+          "transfer": 0
+        },
+        "executionReady": false,
+        "precisionStatus": "Local preview uses whole-token subscriptions and 18 token decimals. Final contract precision and BNB dust handling remain subject to review.",
+        "template": "token-fixed-escrow-v1-preview"
+      },
+      "startsAt": "2026-11-12T19:33:03.264Z",
+      "endsAt": "2026-11-19T19:33:03.264Z",
+      "economics": {
+        "priceWei": "10000000000",
+        "publicUnits": "555555555",
+        "maxRaiseWei": "5555555550000000000",
+        "minimumWei": "1000000000000000000",
+        "soldUnits": "0",
+        "raisedWei": "0",
+        "remaining": "555555555",
+        "identityCap": "22222222",
+        "totalSupply": "1000000000",
+        "liquidityWei": "0",
+        "creatorWei": "0",
+        "platformWei": "0",
+        "roundingWei": "0",
+        "poolTokenBase": "0",
+        "burnTokenBase": "1000000000000000000000000000",
+        "progressBps": 0,
+        "minimumReached": false,
+        "lowMinimumWarning": true,
+        "precisionStatus": "Local preview uses whole-token subscriptions and 18 token decimals. Final contract precision and BNB dust handling remain subject to review."
+      },
+      "metadata": null,
+      "metadataDigest": null,
+      "contentPersistenceVerified": false,
+      "templateSecurityReview": "not-performed",
+      "contracts": {
+        "factory": null,
+        "launch": null,
+        "asset": null,
+        "identity": null,
+        "router": null,
+        "factoryDex": null,
+        "wbnb": null,
+        "pair": null
+      },
+      "readiness": {
+        "walletOwnershipVerified": false,
+        "contractsDeployed": false,
+        "gasEstimated": false,
+        "simulationPassed": false
+      },
+      "warning": "LOCAL FRONTEND REVIEW ONLY. No live issuance, wallet login, signing, spending approval, mint or transfer. Do not reuse the existing ECHO Mint contract.",
+      "configDigest": "c3a1db6b6d1c943b46e275c1b01a380fbd81e791191b19a598a3602614082768",
+      "illustrative": true
+    },
+    {
+      "schema": "echo-launch-local/v2",
+      "id": "example-atelier",
+      "scope": "local-draft",
+      "executionReady": false,
+      "chainId": 56,
+      "template": "nft-escrow-v1-preview",
+      "rulesVersion": "echo-launch-business-20261114.2",
+      "project": {
+        "type": "nft",
+        "name": "Atelier Archive",
+        "symbol": "ATLR",
+        "tagline": "看看未售罄的 NFT 项目如何退回认购本金。",
+        "description": "此项目仅供本地交互演示。NFT 图像、编号、认购、失败退款与成功领取均为示例，不对应真实资产或项目。",
+        "category": "culture",
+        "cover": "./covers/atelier-collective.svg",
+        "website": "",
+        "x": "",
+        "creatorRecipient": "",
+        "nftSupply": "12",
+        "price": "0.005",
+        "minimumRaise": "1",
+        "startsAt": "2026-11-12T19:33:03.265Z"
+      },
+      "rules": {
+        "version": "echo-launch-business-20261114.2",
+        "chainId": 56,
+        "durationSeconds": 604800,
+        "tokenTotal": "1000000000",
+        "tokenPublic": "555555555",
+        "tokenLiquidityReserve": "444444444",
+        "tokenUnallocated": "1",
+        "tokenIdentityPercent": 4,
+        "tokenIdentityCap": "22222222",
+        "tokenDecimalsPreview": 18,
+        "subscriptionUnit": "whole-token",
+        "earlyExitBps": 500,
+        "earlyExitBufferSeconds": 900,
+        "poolGraceSeconds": 172800,
+        "pauseLimitSeconds": 86400,
+        "tokenSplit": {
+          "liquidity": 80,
+          "creator": 15,
+          "platform": 5
+        },
+        "nftSplit": {
+          "creator": 90,
+          "platform": 10
+        },
+        "tax": {
+          "buy": 0,
+          "sell": 2,
+          "transfer": 0
+        },
+        "executionReady": false,
+        "precisionStatus": "Local preview uses whole-token subscriptions and 18 token decimals. Final contract precision and BNB dust handling remain subject to review.",
+        "template": "nft-escrow-v1-preview"
+      },
+      "startsAt": "2026-11-12T19:33:03.265Z",
+      "endsAt": "2026-11-19T19:33:03.265Z",
+      "economics": {
+        "priceWei": "5000000000000000",
+        "publicUnits": "12",
+        "maxRaiseWei": "60000000000000000",
+        "minimumWei": "60000000000000000",
+        "soldUnits": "0",
+        "raisedWei": "0",
+        "remaining": "12",
+        "identityCap": null,
+        "totalSupply": "12",
+        "liquidityWei": "0",
+        "creatorWei": "0",
+        "platformWei": "0",
+        "roundingWei": "0",
+        "poolTokenBase": "0",
+        "burnTokenBase": "0",
+        "progressBps": 0,
+        "minimumReached": false,
+        "lowMinimumWarning": false,
+        "precisionStatus": "Local preview uses whole-token subscriptions and 18 token decimals. Final contract precision and BNB dust handling remain subject to review."
+      },
+      "metadata": [
+        {
+          "tokenId": 1,
+          "name": "Atelier Archive #1",
+          "image": "./covers/atelier-collective.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "tokenId": 2,
+          "name": "Atelier Archive #2",
+          "image": "./covers/atelier-collective.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "tokenId": 3,
+          "name": "Atelier Archive #3",
+          "image": "./covers/atelier-collective.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 3
+            }
+          ]
+        },
+        {
+          "tokenId": 4,
+          "name": "Atelier Archive #4",
+          "image": "./covers/atelier-collective.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 4
+            }
+          ]
+        },
+        {
+          "tokenId": 5,
+          "name": "Atelier Archive #5",
+          "image": "./covers/atelier-collective.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 5
+            }
+          ]
+        },
+        {
+          "tokenId": 6,
+          "name": "Atelier Archive #6",
+          "image": "./covers/atelier-collective.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 6
+            }
+          ]
+        },
+        {
+          "tokenId": 7,
+          "name": "Atelier Archive #7",
+          "image": "./covers/atelier-collective.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 7
+            }
+          ]
+        },
+        {
+          "tokenId": 8,
+          "name": "Atelier Archive #8",
+          "image": "./covers/atelier-collective.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 8
+            }
+          ]
+        },
+        {
+          "tokenId": 9,
+          "name": "Atelier Archive #9",
+          "image": "./covers/atelier-collective.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 9
+            }
+          ]
+        },
+        {
+          "tokenId": 10,
+          "name": "Atelier Archive #10",
+          "image": "./covers/atelier-collective.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 10
+            }
+          ]
+        },
+        {
+          "tokenId": 11,
+          "name": "Atelier Archive #11",
+          "image": "./covers/atelier-collective.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 11
+            }
+          ]
+        },
+        {
+          "tokenId": 12,
+          "name": "Atelier Archive #12",
+          "image": "./covers/atelier-collective.svg",
+          "description": "ECHO Launch local example. Not a minted NFT.",
+          "attributes": [
+            {
+              "trait_type": "Edition",
+              "value": 12
+            }
+          ]
+        }
+      ],
+      "metadataDigest": "037d7ba103712d731e4646d10ff286462ba268041e3b677c6bd7f599f8d61d0a",
+      "contentPersistenceVerified": false,
+      "templateSecurityReview": "not-performed",
+      "contracts": {
+        "factory": null,
+        "launch": null,
+        "asset": null,
+        "identity": null,
+        "router": null,
+        "factoryDex": null,
+        "wbnb": null,
+        "pair": null
+      },
+      "readiness": {
+        "walletOwnershipVerified": false,
+        "contractsDeployed": false,
+        "gasEstimated": false,
+        "simulationPassed": false
+      },
+      "warning": "LOCAL FRONTEND REVIEW ONLY. No live issuance, wallet login, signing, spending approval, mint or transfer. Do not reuse the existing ECHO Mint contract.",
+      "configDigest": "f007fd95b643a4c0abbafd84a4a48fd94cb94155bb5df8f9a55ebfda915fb15e",
+      "illustrative": true
+    },
+    {
+      "schema": "echo-launch-local/v2",
+      "id": "example-signal",
+      "scope": "local-draft",
+      "executionReady": false,
+      "chainId": 56,
+      "template": "token-fixed-escrow-v1-preview",
+      "rulesVersion": "echo-launch-business-20261114.2",
+      "project": {
+        "type": "token",
+        "name": "Signal Collective",
+        "symbol": "SGNL",
+        "tagline": "体验建池后的待派发、已到账与自助领取兜底。",
+        "description": "此项目仅供本地交互演示。展示固定价格托管认购、最低募集额、建池、派发和卖出税规则，不对应真实资产或交易。",
+        "category": "community",
+        "cover": "./covers/aurum-studio.svg",
+        "website": "",
+        "x": "",
+        "creatorRecipient": "",
+        "nftSupply": "12",
+        "price": "0.00000001",
+        "minimumRaise": "1",
+        "startsAt": "2026-11-12T19:33:03.267Z"
+      },
+      "rules": {
+        "version": "echo-launch-business-20261114.2",
+        "chainId": 56,
+        "durationSeconds": 604800,
+        "tokenTotal": "1000000000",
+        "tokenPublic": "555555555",
+        "tokenLiquidityReserve": "444444444",
+        "tokenUnallocated": "1",
+        "tokenIdentityPercent": 4,
+        "tokenIdentityCap": "22222222",
+        "tokenDecimalsPreview": 18,
+        "subscriptionUnit": "whole-token",
+        "earlyExitBps": 500,
+        "earlyExitBufferSeconds": 900,
+        "poolGraceSeconds": 172800,
+        "pauseLimitSeconds": 86400,
+        "tokenSplit": {
+          "liquidity": 80,
+          "creator": 15,
+          "platform": 5
+        },
+        "nftSplit": {
+          "creator": 90,
+          "platform": 10
+        },
+        "tax": {
+          "buy": 0,
+          "sell": 2,
+          "transfer": 0
+        },
+        "executionReady": false,
+        "precisionStatus": "Local preview uses whole-token subscriptions and 18 token decimals. Final contract precision and BNB dust handling remain subject to review.",
+        "template": "token-fixed-escrow-v1-preview"
+      },
+      "startsAt": "2026-11-12T19:33:03.267Z",
+      "endsAt": "2026-11-19T19:33:03.267Z",
+      "economics": {
+        "priceWei": "10000000000",
+        "publicUnits": "555555555",
+        "maxRaiseWei": "5555555550000000000",
+        "minimumWei": "1000000000000000000",
+        "soldUnits": "0",
+        "raisedWei": "0",
+        "remaining": "555555555",
+        "identityCap": "22222222",
+        "totalSupply": "1000000000",
+        "liquidityWei": "0",
+        "creatorWei": "0",
+        "platformWei": "0",
+        "roundingWei": "0",
+        "poolTokenBase": "0",
+        "burnTokenBase": "1000000000000000000000000000",
+        "progressBps": 0,
+        "minimumReached": false,
+        "lowMinimumWarning": true,
+        "precisionStatus": "Local preview uses whole-token subscriptions and 18 token decimals. Final contract precision and BNB dust handling remain subject to review."
+      },
+      "metadata": null,
+      "metadataDigest": null,
+      "contentPersistenceVerified": false,
+      "templateSecurityReview": "not-performed",
+      "contracts": {
+        "factory": null,
+        "launch": null,
+        "asset": null,
+        "identity": null,
+        "router": null,
+        "factoryDex": null,
+        "wbnb": null,
+        "pair": null
+      },
+      "readiness": {
+        "walletOwnershipVerified": false,
+        "contractsDeployed": false,
+        "gasEstimated": false,
+        "simulationPassed": false
+      },
+      "warning": "LOCAL FRONTEND REVIEW ONLY. No live issuance, wallet login, signing, spending approval, mint or transfer. Do not reuse the existing ECHO Mint contract.",
+      "configDigest": "55e7d3b1f967e1b5777fcd93a6ed6f1b854cfa1d265574ddf527d34eb305a307",
+      "illustrative": true
+    }
+  ]
+}

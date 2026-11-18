@@ -1,0 +1,54 @@
+{
+  "chainId": 56,
+  "observedAt": "2026-11-18T14:32:41.460Z",
+  "contracts": {
+    "Token": {
+      "address": "0xB3ca4b947872f92307bCB5b69Fb3a675ABfD8F41",
+      "bscscan": "exact_match",
+      "observedAt": "2026-11-18T14:25:18.179Z"
+    },
+    "Mint": {
+      "address": "0xe90D5BEb063B8df8c76AaF2B0da839cD4B19f55f",
+      "bscscan": "exact_match",
+      "observedAt": "2026-11-18T14:25:18.179Z"
+    },
+    "Registry": {
+      "address": "0x03a972943388833d26f47A51c3C28B164ac8A317",
+      "bscscan": "exact_match",
+      "observedAt": "2026-11-18T14:25:57.666Z"
+    },
+    "Factory": {
+      "address": "0x8564076727E84bBEf05dBF6f50feC16A1d864266",
+      "bscscan": "exact_match",
+      "observedAt": "2026-11-18T14:26:52.181Z"
+    },
+    "Oracle": {
+      "address": "0xc5A4A7B12a889368379A01337d4639DfF99a57aD",
+      "bscscan": "exact_match",
+      "observedAt": "2026-11-18T14:27:28.503Z"
+    },
+    "Pair": {
+      "address": "0xaFe793901Ec2DAc8c8F5F832Ab818A0d06bC13CA",
+      "bscscan": "source-visible-with-similar-match-and-constructor-markers",
+      "observedAt": "2026-11-18T14:32:41.460Z",
+      "note": "The page simultaneously shows Exact Match heading and a Similar Match reference plus Constructor marker. Do not collapse this to the first five contracts' clear Exact Match confirmation."
+    }
+  },
+  "coreContracts": [
+    "Token",
+    "Mint",
+    "Registry",
+    "Factory"
+  ],
+  "auxiliaryContracts": [
+    "Oracle",
+    "Pair"
+  ],
+  "thirdPartySharedDependenciesExcluded": true,
+  "gasAndAdminEoasExcluded": true,
+  "registeredChildProjectsAtLatestRead": 0,
+  "sourceVerificationIsNotAudit": true,
+  "website": "https://echobsc.fun/",
+  "launch": "https://echobsc.fun/launch/",
+  "note": "Historical verification snapshot, not a live status or security audit. Query current chain/API state before any action."
+}

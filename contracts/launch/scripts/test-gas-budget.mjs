@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import {spawnSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+const root=path.resolve(import.meta.dirname,'..');
+const files=['scripts/gas-budget.mjs','scripts/test-gas-budget.mjs','test/gas-budget.test.mjs'],hash=f=>createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex');
+const inputHashes=Object.fromEntries(files.map(f=>[f,hash(f)]));
+const r=spawnSync(process.execPath,['--test','--test-reporter=tap','test/gas-budget.test.mjs'],{cwd:root,encoding:'utf8',timeout:30000}),output=(r.stdout??'')+(r.stderr??'');
+const changed=files.filter(f=>hash(f)!==inputHashes[f]);
+const result={at:new Date().toISOString(),exitCode:r.status,passed:Number(output.match(/# pass (\d+)/)?.[1]??0),failed:Number(output.match(/# fail (\d+)/)?.[1]??0),inputHashes,unchangedInputs:changed.length===0,changed,executionReady:false};
+fs.writeFileSync(path.join(root,'evidence/gas-budget-tests.tap'),output);fs.writeFileSync(path.join(root,'evidence/gas-budget-test-result.json'),JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify(result));if(r.status!==0||changed.length||result.passed!==5||result.failed)process.exitCode=1;

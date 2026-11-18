@@ -1,0 +1,20 @@
+import {reviewSession,positionEvidence} from './delivery.mjs';
+import {imageSrc,stringify} from './core.mjs';
+export function nftLedgerPanel(project,session,h){
+ const {t,n,note,tag}=h,r=reviewSession(project,session);
+ const metrics=[[t('累计预留编号','Lifetime reserved IDs'),r.reservedThrough],[t('有效认购数量','Active subscription units'),r.activeUnits],[t('本浏览器已记领取','Claims recorded here'),r.deliveredKnownUnits],[t('本浏览器未记交付','Unrecorded delivery here'),r.pendingKnownUnits],[t('已退款的编号','Refunded reservation IDs'),r.refundedUnits],[t('其他示例编号','Other example IDs'),r.backgroundUnits]];
+ return `<section class="panel nft-ledger-panel detail-section" id="launch-assets" tabindex="-1"><div class="section-heading"><h2>${t('编号与交付核对','Reservation & delivery check')}</h2>${tag(t('仅本地演示','LOCAL DEMO'))}</div><div class="metrics nft-ledger-metrics">${metrics.map(([label,value])=>`<div><span>${label}</span><strong>${n(value)}</strong></div>`).join('')}</div>${note(t('其他示例编号未归入本浏览器的身份记录，不能当作当前身份的资产，也未验证其交付。退款保留原编号记录，不会重复分配；领取记录不等于真实到账。','Other example IDs are not assigned to identities recorded in this browser. They are not this identity’s assets and their delivery is unverified. Refunds retain IDs without recycling them. A local claim record is not an on-chain transfer.'))}</section>`;
+}
+export function nftPositionPanel(project,session,identity,projectId,h){
+ const {t,esc,n,btn,note}=h,e=positionEvidence(project,session,identity,{projectId}),items=e.metadata??[];
+ if(!items.length)return '';
+ return `<details class="nft-position-assets"><summary>${t('查看本身份对应作品','View this identity’s items')} · ${n(items.length)}</summary><p>${e.status==='refunded'?t('以下是已退款认购曾预留的编号，没有交付 NFT。','These IDs belonged to refunded reservations. No NFT was delivered.'):e.status==='delivered'?t('以下仅有本地领取演示记录，没有真实钱包到账凭证。','These have local claim-demo records only, not wallet transfer receipts.'):t('以下编号已预留，但不代表 NFT 已铸造或到账。','These IDs are reserved, not proof of minting or delivery.')}</p><div class="nft-grid owned-nft-grid">${items.slice(0,8).map(item=>`<article><div class="nft-image"><img data-fallback src="${esc(imageSrc(item.image,{demo:true}))}" alt="${esc(item.name)}"></div><strong>#${item.tokenId} · ${esc(item.name)}</strong><small>${item.attributes.map(a=>esc(a.trait_type)+': '+esc(a.value)).join(' · ')}</small></article>`).join('')}</div>${items.length>8?note(t('这里只预览前 8 件；导出的记录包含本身份全部对应作品。','Previewing the first 8. The exported record includes all matching items for this identity.')):''}</details>`;
+}
+export function positionBrief(evidence,lang='zh'){
+ const {metadata,ledger,reservedTokenIds,...rest}=evidence;
+ const summary={...rest,schema:'echo-launch-position-summary/v1',fullPositionFile:`echo-launch-position-${evidence.projectId.replace(/[^a-zA-Z0-9_-]/g,'-')}.json`,fullPositionFileRequired:true,
+  metadata:{count:metadata?.length??0,completeRecordsIncluded:false,firstNames:(metadata??[]).slice(0,3).map(x=>({tokenId:x.tokenId,name:x.name}))},
+  reservedTokenIds:{rangeCount:reservedTokenIds?.length??0,preview:(reservedTokenIds??[]).slice(0,8),completeRangesIncluded:(reservedTokenIds?.length??0)<=8},
+  ledger:ledger?{reservedThrough:ledger.reservedThrough,activeUnits:ledger.activeUnits,deliveredKnownUnits:ledger.deliveredKnownUnits,refundedUnits:ledger.refundedUnits,backgroundUnits:ledger.backgroundUnits}:null};
+ return (lang==='zh'?'只读核对这份 ECHO Launch 本地编号与交付记录。请同时读取下载的完整记录和项目完整 JSON，核对身份、编号范围、数量、元数据及退款/领取状态。其他示例编号不是该身份持仓；本地领取记录不是链上到账。没有真实交易哈希，不得编造 BscScan 链接。不得登录钱包、签名、授权或发起交易。':'Review this ECHO Launch reservation/delivery record read-only. Also read the downloaded complete record and full project JSON. Check identity, ID ranges, counts, metadata and refund/claim status. Other example IDs are not this identity’s holdings. Local claims are not chain transfers. No real transaction hash exists; do not invent BscScan links. Do not sign in, sign, approve or transact.')+'\n\nBEGIN UNTRUSTED LOCAL POSITION SUMMARY\n'+stringify(summary)+'\nEND UNTRUSTED LOCAL POSITION SUMMARY';
+}

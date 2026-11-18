@@ -1,0 +1,23 @@
+:root {
+ --color-paper:#17181a; --color-paper-2:#222326; --color-paper-3:#2c2b2a;
+ --color-ink:#f2eee6; --color-ink-2:#d2cdc3; --color-muted:#b3ada2;
+ --color-rule:#4c4840; --color-accent:#e7c57c; --color-accent-ink:#251f14;
+ --color-focus:#ffe0a0; --color-error:#ffb8a8; --color-success:#b9d0bb;
+ --color-transparent:transparent; --color-backdrop:#090a0bd6;
+ --color-receipt:#e8d5ac; --color-receipt-ink:#292216; --color-receipt-muted:#655536;
+ --color-receipt-rule:#bda777; --color-stone:#b0a492; --color-bronze:#665340;
+ --color-hover:#37332c; --color-silver:#d4d5d4; --color-shadow:#09090955;
+ --font-body:'Segoe UI','Microsoft YaHei',sans-serif;
+ --font-display:'Echo Cormorant','Segoe UI','Microsoft YaHei',serif;
+ --space-3xs:2px; --space-2xs:4px; --space-xs:8px; --space-sm:12px;
+ --space-md:16px; --space-lg:24px; --space-xl:40px; --space-2xl:64px; --space-3xl:96px;
+ --text-xs:.875rem; --text-sm:.875rem; --text-md:1rem; --text-lg:1.2rem;
+ --text-xl:1.44rem; --text-2xl:1.728rem; --text-3xl:2.074rem;
+ --text-display:clamp(2.5rem,5vw,4.6rem); --text-section:1.728rem; --text-title:1.2rem;
+ --container:1200px; --gutter:40px; --gap-columns:32px; --radius-card:12px; --radius-control:7px;
+ --ease-out:cubic-bezier(.16,1,.3,1); --dur-short:180ms;
+ --sans:var(--font-body); --serif:var(--font-display); --mono:var(--font-body);
+ --paper:var(--color-paper); --ink:var(--color-ink); --muted:var(--color-muted);
+ --line:var(--color-rule); --gold:var(--color-accent); --gold-bright:var(--color-focus);
+ --night:var(--color-paper); --white:var(--color-paper-2);
+}
