@@ -1,0 +1,83 @@
+name: Import reviewed ECHO source
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: import-reviewed-echo-source
+  cancel-in-progress: false
+
+jobs:
+  import-source:
+    if: github.repository == 'caelum7story/echo-protocol' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out this public repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+
+      - name: Verify and expand the reviewed source archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s  %s\n' '906e10ceb21a558f8e059d290c45cfdcc77b3b429636863152a28652f194bf32' 'echo-protocol-source.zip' | sha256sum --check -
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import pathlib
+          import stat
+          import zipfile
+
+          root = pathlib.Path.cwd().resolve()
+          allowed_roots = {'frontend', 'contracts', 'deployments', 'docs', 'scripts', '.gitignore', '.gitattributes', 'package.json', 'README.md', 'SECURITY.md', 'NOTICE.md'}
+          forbidden_parts = {'.git', '.github', 'node_modules', '.operator-private', '.preview', '.generated', 'keys', 'wallets', 'sessions'}
+          with zipfile.ZipFile('echo-protocol-source.zip') as archive:
+              entries = archive.infolist()
+              payload = [entry for entry in entries if not entry.is_dir()]
+              if len(payload) != 546 or sum(entry.file_size for entry in payload) > 20_000_000:
+                  raise SystemExit('Unexpected source archive size or file count')
+              for entry in entries:
+                  name = entry.filename
+                  relative = pathlib.PurePosixPath(name)
+                  if relative.is_absolute() or '\\' in name or ':' in name or '..' in relative.parts:
+                      raise SystemExit('Unsafe archive path')
+                  if not relative.parts or relative.parts[0] not in allowed_roots:
+                      raise SystemExit('Unexpected archive root')
+                  if any(part in forbidden_parts or part == '.env' or part.startswith('.env.') for part in relative.parts):
+                      raise SystemExit('Private/runtime path refused')
+                  if stat.S_ISLNK(entry.external_attr >> 16):
+                      raise SystemExit('Symlink refused')
+                  target = (root / name).resolve()
+                  if not target.is_relative_to(root):
+                      raise SystemExit('Archive path escaped repository')
+                  if entry.is_dir():
+                      target.mkdir(parents=True, exist_ok=True)
+                  else:
+                      target.parent.mkdir(parents=True, exist_ok=True)
+                      target.write_bytes(archive.read(entry))
+          manifest = json.loads((root / 'docs/source-manifest.json').read_text())
+          for entry in manifest['files']:
+              target = (root / entry['path']).resolve()
+              if not target.is_relative_to(root):
+                  raise SystemExit('Invalid provenance path')
+              if hashlib.sha256(target.read_bytes()).hexdigest() != entry['sha256']:
+                  raise SystemExit('Source provenance mismatch')
+          print('Verified archive SHA-256, expanded 546 files and checked all source provenance hashes.')
+          PY
+
+      - name: Commit the native source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- frontend contracts deployments docs scripts .gitignore .gitattributes package.json README.md SECURITY.md NOTICE.md
+          if git diff --cached --quiet; then
+            echo 'Reviewed source tree is already present.'
+            exit 0
+          fi
+          git commit -m 'Publish reviewed ECHO frontend and contract source tree'
+          git push origin HEAD:main
